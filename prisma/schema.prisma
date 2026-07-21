@@ -1,0 +1,386 @@
+// Prisma schema for the DIS Shop admin dashboard.
+// Get a free hosted Postgres database from Neon (neon.tech) or Supabase
+// (supabase.com), then set DATABASE_URL in .env.local and run:
+//   npx prisma migrate dev --name init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---- Admin RBAC (see data/adminRoles.js for the role/permission matrix) ----
+// The single ADMIN_EMAIL/ADMIN_PASSWORD_HASH env-var login (lib/adminAuth.js)
+// still works as a break-glass Super Admin fallback if the DB is empty or
+// unreachable — this table is the real, multi-user system going forward.
+model AdminUser {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         String // SUPER_ADMIN | ADMIN | SALES | WAREHOUSE | DELIVERY
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+// Audit trail for admin sign-ins and permission-gated actions — separate
+// from OrderActivity (which tracks order-specific history for customers).
+model AdminActivityLog {
+  id         String   @id @default(cuid())
+  actorEmail String
+  action     String
+  details    String?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  @@index([actorEmail])
+  @@index([createdAt])
+}
+
+model Category {
+  id             String     @id @default(cuid())
+  slug           String     @unique
+  name           String
+  nameAr         String?
+  description    String?
+  seoTitle       String?
+  seoDescription String?
+  icon           String?
+  imageUrl       String?
+  // Display order within its parent (or within level 1 for main categories) —
+  // written by the admin drag-and-drop reorder screen.
+  order          Int        @default(0)
+  // 1 = Main, 2 = Subcategory, 3 = Child. Enforced in application code, not
+  // a DB constraint, since Postgres has no native "max relation depth".
+  level          Int        @default(1)
+  active         Boolean    @default(true)
+  showOnHomepage Boolean    @default(false)
+  showInNav      Boolean    @default(true)
+  // Category-specific filter definitions, e.g.
+  // [{"key":"capacity","label":"Capacity","type":"select","options":["1HP","1.5HP"]}]
+  filters        Json?
+  // Optional Odoo product.category external id — inert while ODOO_SYNC_ENABLED
+  // is false; not read or written by anything in services/odoo/.
+  odooCategoryId Int?
+  parentId       String?
+  parent         Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children       Category[] @relation("CategoryHierarchy")
+  products       Product[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index([parentId])
+  @@index([level])
+}
+
+// Drives a 301/308 when an existing category slug must change — checked at
+// request time in pages/category/[slug].js, no rebuild/redeploy needed to
+// add a new redirect.
+model CategoryRedirect {
+  id        String   @id @default(cuid())
+  fromSlug  String   @unique
+  toSlug    String
+  createdAt DateTime @default(now())
+}
+
+model Brand {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  logoUrl   String?
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id             String                @id @default(cuid())
+  name           String
+  description    String?
+  price          Float
+  originalPrice  Float?
+  rating         Float                 @default(4.5)
+  reviews        Int                   @default(0)
+  badge          String?
+  isNew          Boolean               @default(false)
+  color          String                @default("#E5ECF3")
+  imageUrl       String?
+  images         Json?
+  videoUrl       String?
+  stock          Int                   @default(0)
+  sku            String?               @unique
+  featured       Boolean               @default(false)
+  specs          Json?
+  categoryId     String
+  category       Category              @relation(fields: [categoryId], references: [id])
+  brandId        String?
+  brand          Brand?                @relation(fields: [brandId], references: [id])
+  orderItems     OrderItem[]
+  productReviews Review[]
+  searchKeyword  ProductSearchKeyword?
+  searchEvents   SearchEvent[]
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id                    String          @id @default(cuid())
+  customerId            String?
+  customer              Customer?       @relation(fields: [customerId], references: [id])
+  customerName          String
+  phone                 String?
+  state                 String?
+  deliveryZone          String?
+  address               String?
+  notes                 String?
+  payment               String?
+  // See data/orderStatuses.js for the canonical status list — orders placed
+  // before this vocabulary existed may still carry old values ("Pending",
+  // "Shipped"); those are mapped for display only, never rewritten here.
+  status                String          @default("Order Received")
+  paymentStatus         String          @default("Pending")
+  total                 Float
+  // Real, admin-entered figures — never computed/guessed. Checkout doesn't
+  // charge a delivery fee up front (see the "confirmed by WhatsApp" flow
+  // throughout the storefront), so this stays null until an admin fills it
+  // in from the order detail page. discount is the coupon amount already
+  // subtracted from `total` at checkout (see pages/checkout.js) — stored
+  // here too so Admin can show it as its own line instead of just the
+  // free-text note it used to be folded into.
+  discount              Float?
+  deliveryFee           Float?
+  // Hidden from the default admin list instead of deleted — see
+  // "Do not delete orders by default" in the Orders Management spec.
+  archived              Boolean         @default(false)
+  // Customer-pinned delivery location from the checkout map (see
+  // features/checkout/DeliveryMap.js) — optional, since the map/pin isn't
+  // mandatory for every zone.
+  deliveryLatitude      Float?
+  deliveryLongitude     Float?
+  deliveryMapUrl        String?
+  deliveryLocationLabel String?
+  items                 OrderItem[]
+  activities            OrderActivity[]
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+}
+
+// Admin-facing audit trail — see services/db/orders.js logOrderActivity().
+model OrderActivity {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  type      String // created | status_changed | payment_updated | invoice_generated | whatsapp_sent | delivery_completed | note
+  message   String
+  actor     String?
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+  name      String
+  price     Float
+  qty       Int
+}
+
+model Setting {
+  key   String @id
+  value String
+}
+
+model Review {
+  id           String   @id @default(cuid())
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  customerName String
+  email        String?
+  rating       Int
+  comment      String?
+  verified     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+}
+
+// ---- Smart Search (Admin Dashboard → Settings → Smart Search) ----
+// This storefront has never had PostgreSQL full-text search or pg_trgm set
+// up (search has always been a simple substring match — see pages/search.js)
+// so there's nothing of that kind to "preserve" here. These tables are an
+// additive layer read live by the storefront search page and its public
+// /api/search-config, /api/search-log and /api/search-event endpoints —
+// admin edits take effect on the next search request, no rebuild or restart
+// needed.
+
+model SearchSynonymGroup {
+  id        String   @id @default(cuid())
+  // e.g. ["AC", "Air Conditioner", "مكيف", "تكييف"] — any term in the group
+  // expands a customer's query to match every other term in the group.
+  terms     String[]
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductSearchKeyword {
+  id                String   @id @default(cuid())
+  productId         String   @unique
+  product           Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  arabicName        String?
+  englishName       String?
+  alternativeNames  String[] @default([])
+  searchTags        String[] @default([])
+  misspellings      String[] @default([])
+  technicalKeywords String[] @default([])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model PopularSearchTerm {
+  id        String   @id @default(cuid())
+  term      String
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// One row per search performed on the storefront — powers "Most Searched
+// Terms" and "No-Result Searches" in Admin Analytics.
+model SearchLog {
+  id             String   @id @default(cuid())
+  term           String
+  normalizedTerm String
+  resultCount    Int
+  createdAt      DateTime @default(now())
+
+  @@index([normalizedTerm])
+}
+
+// One row per product click or add-to-cart that happened *from* a search
+// results page — powers "Product Clicks from Search", "Search-to-Cart
+// Conversion", "Popular Brands" and "Popular Categories".
+model SearchEvent {
+  id        String   @id @default(cuid())
+  term      String
+  type      String // "click" | "cart"
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  @@index([type])
+  @@index([productId])
+}
+
+// Ranking weight per matched field, editable in Admin → Smart Search →
+// Search Priority. "Model" and "Tags" have no dedicated Product columns, so
+// they score against ProductSearchKeyword.technicalKeywords and .searchTags
+// respectively — see services/db/search.js for the exact field mapping.
+model SearchPriorityWeight {
+  field     String   @id
+  weight    Int      @default(5)
+  updatedAt DateTime @updatedAt
+}
+
+model Banner {
+  id        String   @id @default(cuid())
+  eyebrow   String?
+  title     String
+  subtitle  String?
+  discount  String?
+  imageUrl  String?
+  linkUrl   String?
+  bgColor   String?
+  // Optional per-banner primary-button label (e.g. "Shop Gree ACs") — null
+  // falls back to the default "Shop Now" used by every other slide.
+  ctaLabel  String?
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---- AI System (Admin → AI, suggest_only by default — see AGENTS.md-level
+// rule: the AI proposes, it never writes Product/Order/Customer directly.
+// Applying a suggestion always goes through the same service functions the
+// human admin UI already calls.) ----
+
+model AiSuggestion {
+  id               String    @id @default(cuid())
+  // PRODUCT_FIELD | PRODUCT_DESCRIPTION | SEO | KEYWORDS | RELATED_PRODUCTS |
+  // DUPLICATE_FLAG | LOW_STOCK_WARNING | REORDER_SUGGESTION |
+  // CUSTOMER_REPLY_DRAFT | QUOTATION_DRAFT | CONTENT_DRAFT | REPORT
+  type             String
+  targetType       String? // "Product" | "Order" | "Customer" | "Category" | null
+  targetId         String?
+  title            String
+  // The actual suggested content/diff — a proposal only, never applied
+  // without going through services/ai/suggestions.js's approve+apply path.
+  payload          Json
+  status           String    @default("PENDING") // PENDING | APPROVED | REJECTED | APPLIED | EXPIRED
+  requiresApproval Boolean   @default(true)
+  model            String?
+  promptTokens     Int?
+  completionTokens Int?
+  createdBy        String    @default("ai")
+  // Admin email — who approved/rejected. A suggestion can never reach
+  // APPLIED without this set to a real authenticated session's email.
+  reviewedBy       String?
+  reviewedAt       DateTime?
+  appliedAt        DateTime?
+  createdAt        DateTime  @default(now())
+
+  @@index([status])
+  @@index([type])
+  @@index([targetType, targetId])
+}
+
+// Dedicated AI audit trail (distinct from AdminActivityLog, which every
+// applied suggestion also writes to for cross-cutting consistency) — carries
+// AI-specific fields like which suggestion an action traces back to.
+model AiActionLog {
+  id           String   @id @default(cuid())
+  suggestionId String?
+  action       String // suggested | approved | rejected | applied | blocked | expired
+  actorEmail   String // admin email, or "ai-system" for generation events
+  targetType   String?
+  targetId     String?
+  status       String // success | failed | blocked
+  details      String?
+  ip           String?
+  createdAt    DateTime @default(now())
+
+  @@index([suggestionId])
+  @@index([createdAt])
+}
+
+// Customer-facing bilingual assistant — anonymous, cookie-scoped session.
+// Never linked to Order/Customer financial data in phase 1.
+model AiConversation {
+  id                    String   @id @default(cuid())
+  sessionId             String   @unique
+  customerId            String?
+  messages              Json // [{role, content, ts}]
+  transferredToWhatsapp Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([sessionId])
+}

@@ -1,0 +1,28 @@
+.stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.starFilled {
+  color: var(--dis-orange-dark);
+  flex-shrink: 0;
+}
+
+.starEmpty {
+  color: var(--border);
+  flex-shrink: 0;
+}
+
+.starHalfWrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.starHalfFill {
+  position: absolute;
+  inset: 0;
+  width: 50%;
+  overflow: hidden;
+  display: inline-flex;
+}

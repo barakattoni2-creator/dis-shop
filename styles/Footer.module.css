@@ -1,0 +1,166 @@
+.footer {
+  background: var(--dis-navy);
+  color: #fff;
+  margin-top: 2rem;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.25rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2.25rem 1.5rem 1.75rem;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.column h3 {
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
+}
+
+.column a {
+  font-size: 0.85rem;
+  color: #ddd;
+}
+
+.column a:hover {
+  text-decoration: underline;
+}
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 0.15rem;
+  margin-bottom: 0.6rem;
+}
+
+.logoBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--dis-orange);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 0.26rem 0.5rem;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.logoText {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.about {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: #ccd3de;
+  margin-bottom: 0.6rem;
+  max-width: 240px;
+}
+
+.address {
+  font-style: normal;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #ddd;
+}
+
+.whatsappLink {
+  color: #25d366;
+  font-weight: 600;
+}
+
+.paymentRow {
+  border-top: 1px solid var(--dis-navy-light);
+  padding: 1rem 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.paymentLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.paymentPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.paymentPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--dis-navy-light);
+  border-radius: 20px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #eee;
+}
+
+.bottom {
+  border-top: 1px solid var(--dis-navy-light);
+  /* Extra bottom clearance so the fixed WhatsApp bubble (bottom-right of
+     the viewport) has room to sit below the copyright line rather than
+     directly over it when the page is scrolled all the way down. */
+  padding: 1rem 1.5rem 2.25rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+.socialRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  margin-bottom: 0.7rem;
+}
+
+.socialIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--dis-navy-light);
+  color: #fff;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.socialIcon:hover {
+  background: var(--dis-orange);
+  transform: translateY(-2px);
+}
+
+.adminLink {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.adminLink:hover {
+  color: #ddd;
+}

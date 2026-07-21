@@ -1,0 +1,60 @@
+.button {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  /* Below the header's sticky bar (100) and mobile drawer/backdrop
+     (199/200), so an open menu always wins over the chat bubble instead of
+     the bubble floating on top of it. */
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #25d366;
+  color: #fff;
+  padding: 0.75rem;
+  border-radius: 50px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+}
+
+.icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+  max-width: 0;
+  overflow: hidden;
+  transition: max-width 0.25s ease, margin 0.25s ease;
+}
+
+.button:hover .label {
+  max-width: 140px;
+  margin-right: 0.25rem;
+}
+
+@media (max-width: 600px) {
+  .button {
+    right: 1rem;
+    bottom: 1rem;
+  }
+
+  .label {
+    display: none;
+  }
+}
+
+@media (max-width: 800px) {
+  .hiddenOnMobile {
+    display: none;
+  }
+}

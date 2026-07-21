@@ -1,0 +1,76 @@
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  background: linear-gradient(120deg, var(--dis-navy), var(--dis-blue));
+  color: #fff;
+  border-radius: 14px;
+  padding: 1.8rem 2rem;
+  margin-bottom: 1.6rem;
+}
+
+.text {
+  min-width: 240px;
+  flex: 1;
+}
+
+.heading {
+  font-size: 1.25rem;
+  margin-bottom: 0.4rem;
+}
+
+.subtext {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  max-width: 56ch;
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.whatsappBtn {
+  background: #25d366;
+  color: #fff;
+  font-weight: 700;
+  padding: 0.7rem 1.3rem;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.whatsappBtn:hover {
+  filter: brightness(1.08);
+}
+
+.contactBtn {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  font-weight: 700;
+  padding: 0.7rem 1.3rem;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.contactBtn:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+@media (max-width: 640px) {
+  .cta {
+    padding: 1.4rem;
+  }
+  .actions {
+    width: 100%;
+  }
+  .whatsappBtn,
+  .contactBtn {
+    flex: 1;
+    text-align: center;
+  }
+}

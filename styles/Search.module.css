@@ -1,0 +1,51 @@
+.popularWrap {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 20px 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.popularLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: #7a8699;
+}
+
+.popularChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 20px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--dis-navy);
+}
+
+.chip:hover {
+  border-color: var(--dis-blue);
+  color: var(--dis-blue);
+}
+
+.chipActive {
+  background: var(--dis-blue);
+  border-color: var(--dis-blue);
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .popularWrap {
+    padding: 16px 16px 0;
+  }
+}

@@ -1,0 +1,132 @@
+.section {
+  padding: 56px 1.8rem;
+  max-width: 1400px;
+  margin: 2rem auto;
+  background: linear-gradient(120deg, #fff6ed, #ffffff);
+  border: 1px solid #fbdcb4;
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(204, 85, 0, 0.1);
+}
+
+.headingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.heading {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--dis-orange-dark);
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #7a5a3a;
+  margin-top: 0.25rem;
+}
+
+.headingRight {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.viewAll {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--dis-orange-dark);
+  white-space: nowrap;
+}
+
+.viewAll:hover {
+  color: var(--dis-navy);
+}
+
+.timer {
+  background: var(--dis-orange);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 6px 16px rgba(204, 85, 0, 0.3);
+}
+
+.arrows {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.arrowBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #fbdcb4;
+  color: var(--dis-orange-dark);
+}
+
+.arrowBtn:hover {
+  border-color: var(--dis-orange);
+  background: var(--dis-orange);
+  color: #fff;
+}
+
+.track {
+  display: flex;
+  gap: 1.4rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 0.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.track::-webkit-scrollbar {
+  height: 8px;
+}
+
+.track::-webkit-scrollbar-thumb {
+  background: #fbdcb4;
+  border-radius: 4px;
+}
+
+.slide {
+  flex: 0 0 auto;
+  width: 240px;
+  scroll-snap-align: start;
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 36px 1rem;
+    margin: 1.2rem auto;
+  }
+
+  .heading {
+    font-size: 1.3rem;
+  }
+
+  .subtitle {
+    display: none;
+  }
+
+  .headingRight {
+    gap: 0.6rem;
+  }
+
+  .arrows {
+    display: none;
+  }
+
+  .slide {
+    width: 165px;
+  }
+}

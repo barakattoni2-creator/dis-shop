@@ -1,0 +1,210 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 35, 65, 0.55);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 400;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  position: relative;
+  background: #fff;
+  border-radius: 18px;
+  max-width: 780px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+  animation: popIn 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.closeBtn {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--border);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeBtn:hover {
+  background: var(--surface);
+}
+
+.imageCol {
+  position: relative;
+  min-height: 280px;
+}
+
+.image {
+  font-size: 5.5rem;
+}
+
+.badge {
+  position: absolute;
+  top: 0.9rem;
+  left: 0.9rem;
+  z-index: 2;
+  background: linear-gradient(120deg, var(--dis-price), var(--dis-orange));
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: 20px;
+}
+
+.infoCol {
+  padding: 2rem 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.brand {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--dis-blue);
+}
+
+.name {
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.reviews {
+  color: var(--dis-blue);
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.2rem;
+}
+
+.price {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--dis-price);
+}
+
+.originalPrice {
+  font-size: 0.9rem;
+  color: #565959;
+  text-decoration: line-through;
+}
+
+.discount {
+  font-size: 0.82rem;
+  color: var(--dis-price);
+  font-weight: 700;
+}
+
+.description {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #565959;
+}
+
+.actions {
+  display: flex;
+  gap: 0.7rem;
+  margin-top: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.addBtn {
+  flex: 1;
+  min-width: 150px;
+  background: var(--dis-orange);
+  border: 1px solid var(--dis-orange-dark);
+  border-radius: 22px;
+  padding: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.addBtn:hover {
+  background: var(--dis-orange-dark);
+}
+
+.wishlistBtn {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 0.7rem 1.2rem;
+  font-weight: 600;
+  color: var(--dis-navy);
+}
+
+.wishlisted {
+  background: #fff1e2;
+  border-color: var(--dis-orange-dark);
+  color: var(--dis-orange-dark);
+}
+
+.viewFull {
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--dis-blue);
+}
+
+.viewFull:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+  .modal {
+    grid-template-columns: 1fr;
+  }
+
+  .imageCol {
+    min-height: 220px;
+  }
+}

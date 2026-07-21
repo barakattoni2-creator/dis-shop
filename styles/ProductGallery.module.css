@@ -1,0 +1,260 @@
+/* Vertical thumbnail rail beside the main image on desktop (Amazon-style);
+   collapses to a horizontal strip below the image on tablet/mobile where a
+   side column doesn't fit. */
+.gallery {
+  display: flex;
+  flex-direction: row;
+  gap: 0.9rem;
+}
+
+@media (min-width: 801px) {
+  .gallery {
+    position: sticky;
+    top: 96px;
+    align-self: start;
+  }
+}
+
+.mainWrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  max-width: 560px;
+  max-height: 560px;
+  aspect-ratio: 1 / 1;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 20px rgba(8, 26, 58, 0.07);
+}
+
+.mainStage {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: zoom-in;
+  overflow: hidden;
+}
+
+.mainImage {
+  font-size: 6rem;
+}
+
+/* Hover-zoom magnifier — a circular lens that tracks the cursor, showing a
+   magnified crop of the same image. Pointer/hover only (see media query
+   below); touch devices use the full-screen lightbox instead. */
+.zoomLens {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  margin-left: -80px;
+  margin-top: -80px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 8px 24px rgba(8, 26, 58, 0.35);
+  background-repeat: no-repeat;
+  background-size: 250%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+@media (hover: none) {
+  .zoomLens {
+    display: none;
+  }
+}
+
+.videoFrame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #000;
+}
+
+.videoThumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--dis-navy);
+}
+
+.playIcon {
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.badge {
+  position: absolute;
+  top: 0.9rem;
+  left: 0.9rem;
+  background: var(--dis-price);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.zoomBtn {
+  position: absolute;
+  bottom: 0.9rem;
+  right: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--border);
+  color: var(--dis-navy);
+  box-shadow: 0 6px 16px rgba(8, 26, 58, 0.18);
+  z-index: 2;
+}
+
+.zoomBtn:hover {
+  background: #fff;
+  color: var(--dis-orange-dark);
+}
+
+.thumbRow {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  gap: 0.6rem;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 0.2rem;
+}
+
+.thumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  padding: 0;
+}
+
+.thumbActive {
+  border-color: var(--dis-orange);
+}
+
+.thumbImage {
+  object-fit: cover;
+}
+
+/* Lightbox */
+
+.lightboxOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 15, 36, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  padding: 1.5rem;
+}
+
+.lightboxClose {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.lightboxClose:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.lightboxArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  z-index: 1;
+}
+
+.lightboxArrow:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.lightboxArrowPrev {
+  left: 1rem;
+}
+
+.lightboxArrowNext {
+  right: 1rem;
+}
+
+.lightboxImageWrap {
+  position: relative;
+  width: min(90vw, 1000px);
+  height: min(82vh, 900px);
+}
+
+.lightboxImage {
+  object-fit: contain;
+}
+
+.lightboxCounter {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+}
+
+@media (max-width: 800px) {
+  .gallery {
+    flex-direction: column;
+  }
+
+  .thumbRow {
+    flex-direction: row;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-right: 0;
+    padding-bottom: 0.2rem;
+  }
+
+  .thumb {
+    width: 56px;
+    height: 56px;
+  }
+
+  .lightboxArrow {
+    width: 38px;
+    height: 38px;
+  }
+}

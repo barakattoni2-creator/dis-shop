@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue\")",
+      "Bash(npm install *)",
+      "Bash(npx prisma *)",
+      "Bash(curl -s http://localhost:3000/api/_prisma-test -w \"\\\\nHTTP %{http_code}\\\\n\")",
+      "Bash(npm run *)",
+      "Bash(disown)",
+      "Bash(tail -n 40 /tmp/dis-shop-dev.log 2>&1)",
+      "Read(//tmp/**)",
+      "Bash(sleep 5 *)",
+      "Bash(npx neonctl@latest init)",
+      "Bash(node -e \"console.log\\(require\\('./package.json'\\).type\\)\")",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\(JSON.stringify\\(p.scripts,null,2\\)\\);\")",
+      "Bash(sleep 4 *)",
+      "Bash(node -e \"console.log\\(process.version\\)\")",
+      "Bash(tail -n 80 /tmp/dis-shop-dev.log 2>&1)",
+      "Bash(xargs -I{} sh -c 'echo \"=== {} ===\"; grep -o \"object-fit:[^;]*;\" \"{}\" | sort -u')",
+      "Bash(tee /tmp/lint-output.txt)",
+      "Bash(tee /tmp/build-output.txt)",
+      "Bash(node -e ' *)"
+    ]
+  }
+}

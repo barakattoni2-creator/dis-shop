@@ -1,0 +1,257 @@
+.root {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--dis-orange);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  white-space: nowrap;
+  box-shadow: 0 6px 16px rgba(204, 85, 0, 0.35);
+  transition: background 0.15s ease;
+}
+
+.trigger:hover {
+  background: var(--dis-orange-dark);
+}
+
+.triggerIcon {
+  font-size: 1rem;
+}
+
+.chevronDown {
+  font-size: 0.7rem;
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 0;
+  display: flex;
+  background: #fff;
+  color: var(--dis-navy);
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(6, 35, 65, 0.28);
+  border: 1px solid var(--border);
+  width: min(880px, 92vw);
+  max-height: min(70vh, 560px);
+  overflow: hidden;
+  z-index: 250;
+  animation: dropIn 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sidebar {
+  flex: none;
+  width: 240px;
+  list-style: none;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  background: var(--surface);
+}
+
+.sidebarItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--dis-navy);
+  border-left: 3px solid transparent;
+}
+
+.sidebarItem:hover,
+.sidebarItem:focus-visible,
+.sidebarItemActive {
+  background: #fff;
+  border-left-color: var(--dis-orange);
+  outline: none;
+}
+
+.iconBadge {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  border-radius: 7px;
+  background: linear-gradient(135deg, var(--surface), #e4edf8);
+  overflow: hidden;
+}
+
+.iconImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sidebarName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex: none;
+  color: #9aa5b1;
+}
+
+.detail {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.detailScroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.1rem 1.3rem;
+}
+
+.detailHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.detailHeading {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--dis-navy);
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.detailHeadingAr {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #565959;
+  direction: rtl;
+}
+
+.viewAllSmall {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--dis-orange-dark);
+  white-space: nowrap;
+}
+
+.viewAllSmall:hover {
+  text-decoration: underline;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 1.4rem 1.2rem;
+}
+
+.column {
+  min-width: 0;
+}
+
+.columnHeading {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: var(--dis-navy);
+  margin-bottom: 0.5rem;
+}
+
+.columnIcon {
+  font-size: 0.9rem;
+}
+
+.columnList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.columnLink {
+  font-size: 0.82rem;
+  color: #565959;
+}
+
+.columnLink:hover {
+  color: var(--dis-blue);
+  text-decoration: underline;
+}
+
+.noSub {
+  font-size: 0.85rem;
+  color: #565959;
+}
+
+.sidebarSkeletonRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.9rem;
+}
+
+.skeletonBlock {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.promo {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  background: linear-gradient(120deg, var(--dis-navy), var(--dis-blue));
+  color: #fff;
+  padding: 0.9rem 1.3rem;
+}
+
+.promoTitle {
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.promoText {
+  font-size: 0.78rem;
+  opacity: 0.9;
+}
+
+@media (max-width: 1100px) {
+  .panel {
+    width: min(680px, 92vw);
+  }
+  .sidebar {
+    width: 190px;
+  }
+}

@@ -1,0 +1,60 @@
+.stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.photo {
+  object-fit: contain;
+  padding: 6%;
+  box-sizing: border-box;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.skeleton {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, var(--surface) 30%, #e4ebf3 50%, var(--surface) 70%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.glow {
+  position: absolute;
+  width: 62%;
+  height: 62%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(255, 255, 255, 0) 72%
+  );
+}
+
+.icon {
+  position: relative;
+  font-size: inherit;
+  filter: drop-shadow(0 10px 14px rgba(8, 26, 58, 0.18));
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.stage:hover .icon {
+  transform: scale(1.14) rotate(-3deg);
+}
+
+.stage:hover .photo {
+  transform: scale(1.08);
+}

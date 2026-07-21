@@ -1,0 +1,387 @@
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.intro {
+  font-size: 0.88rem;
+  color: #565959;
+  margin-bottom: 1.2rem;
+  max-width: 760px;
+  line-height: 1.5;
+}
+
+.note {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.9rem 1.1rem;
+  font-size: 0.85rem;
+  color: #565959;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+/* Tabs */
+
+.tabBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.6rem;
+}
+
+.tabBtn {
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #565959;
+  background: transparent;
+}
+
+.tabBtn:hover {
+  background: var(--surface);
+  color: var(--dis-navy);
+}
+
+.tabBtnActive {
+  background: var(--dis-navy);
+  color: #fff;
+}
+
+.tabPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Card */
+
+.card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(8, 26, 58, 0.05);
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cardHeadRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.cardHeading {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--dis-navy);
+}
+
+.cardSubtext {
+  font-size: 0.82rem;
+  color: #565959;
+}
+
+/* Filter / toolbar row */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.searchInput {
+  flex: 1 1 220px;
+  min-height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.88rem;
+  font-family: inherit;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--dis-blue);
+}
+
+/* Badges */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 20px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.badgeActive {
+  background: #eefaf1;
+  color: #1a8a3d;
+}
+
+.badgeInactive {
+  background: #f6f8fc;
+  color: #7a8699;
+}
+
+.badgeWarn {
+  background: #fdeceb;
+  color: var(--dis-price);
+}
+
+/* Chips (terms, tags) */
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--dis-navy);
+}
+
+/* Buttons */
+
+.btn {
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.btnPrimary {
+  background: var(--dis-orange);
+  border: 1px solid var(--dis-orange-dark);
+  color: #fff;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: var(--dis-orange-dark);
+}
+
+.btnSecondary {
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--dis-navy);
+}
+
+.btnSecondary:hover:not(:disabled) {
+  border-color: var(--dis-blue);
+  color: var(--dis-blue);
+}
+
+.btnDanger {
+  background: #fff1e2;
+  border: 1px solid var(--dis-orange-dark);
+  color: var(--dis-orange-dark);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+}
+
+.btnSm {
+  padding: 0.32rem 0.7rem;
+  font-size: 0.78rem;
+}
+
+/* Pagination */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  color: #565959;
+}
+
+.pagination button {
+  border-radius: 6px;
+  padding: 0.35rem 0.8rem;
+  font-weight: 700;
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--dis-navy);
+}
+
+.pagination button:disabled {
+  opacity: 0.4;
+}
+
+/* Stat grid (analytics) */
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.9rem;
+}
+
+.statCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.statValue {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--dis-navy);
+}
+
+.statLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #565959;
+}
+
+.rankList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rankRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 0.85rem;
+}
+
+.rankTerm {
+  font-weight: 700;
+  color: var(--dis-navy);
+}
+
+.rankCount {
+  font-weight: 700;
+  color: #7a8699;
+}
+
+/* Weight sliders */
+
+.weightRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.weightRow:last-child {
+  border-bottom: none;
+}
+
+.weightLabel {
+  flex: 0 0 160px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--dis-navy);
+}
+
+.weightSlider {
+  flex: 1;
+}
+
+.weightValue {
+  flex: 0 0 32px;
+  text-align: right;
+  font-weight: 800;
+  color: var(--dis-navy);
+}
+
+/* CSV panel */
+
+.csvDropzone {
+  border: 1.5px dashed var(--border);
+  border-radius: 10px;
+  padding: 1.4rem;
+  text-align: center;
+  color: #565959;
+  font-size: 0.85rem;
+}
+
+.csvSummary {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.csvErrorList {
+  list-style: disc;
+  padding-left: 1.2rem;
+  color: var(--dis-price);
+  font-size: 0.8rem;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.empty {
+  color: #565959;
+  padding: 1.5rem 0;
+  text-align: center;
+  font-size: 0.88rem;
+}
+
+.error {
+  color: var(--dis-price);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.success {
+  color: #1a8a3d;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.inlineForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: flex-start;
+}
+
+.dragHandle {
+  cursor: grab;
+  color: #7a8699;
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .weightLabel {
+    flex-basis: 110px;
+    font-size: 0.8rem;
+  }
+}

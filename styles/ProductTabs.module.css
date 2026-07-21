@@ -1,0 +1,93 @@
+.wrap {
+  margin-top: 2rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 12px 32px rgba(8, 26, 58, 0.06);
+  overflow: hidden;
+}
+
+.tabList {
+  display: flex;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.tabBtn {
+  flex: 0 0 auto;
+  padding: 1rem 1.4rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #565959;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.tabBtn:hover {
+  color: var(--dis-navy);
+}
+
+.tabBtnActive {
+  color: var(--dis-orange-dark);
+  border-bottom-color: var(--dis-orange);
+  background: #fff;
+}
+
+.panel {
+  padding: 1.5rem 1.8rem;
+}
+
+.description {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--foreground);
+  white-space: pre-line;
+}
+
+.specs {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.specs th,
+.specs td {
+  text-align: left;
+  padding: 0.7rem 1rem;
+}
+
+.specs th {
+  color: #565959;
+  font-weight: 600;
+  width: 40%;
+}
+
+.specs tr:nth-child(even) {
+  background: var(--surface);
+}
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  padding-left: 1.2rem;
+}
+
+.featureList li {
+  list-style: disc;
+}
+
+@media (max-width: 600px) {
+  .panel {
+    padding: 1.2rem;
+  }
+
+  .tabBtn {
+    padding: 0.85rem 1rem;
+    font-size: 0.82rem;
+  }
+}

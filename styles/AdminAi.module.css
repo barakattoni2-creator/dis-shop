@@ -1,0 +1,160 @@
+.modeBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #eaf7ee;
+  border: 1px solid #2e9e4f;
+  color: #1d6b34;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.modeBannerDisabled {
+  background: #fff1e2;
+  border-color: var(--dis-orange-dark);
+  color: var(--dis-orange-dark);
+}
+
+.hubGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.hubCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.hubCard:hover {
+  border-color: var(--dis-blue);
+}
+
+.hubCardIcon {
+  font-size: 1.5rem;
+}
+
+.hubCardTitle {
+  font-weight: 700;
+  color: var(--dis-navy);
+}
+
+.hubCardDesc {
+  font-size: 0.8rem;
+  color: #565959;
+}
+
+.placeholder {
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.placeholderIcon {
+  font-size: 2.4rem;
+  display: block;
+  margin-bottom: 0.8rem;
+}
+
+.placeholderHeading {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.placeholderText {
+  color: #565959;
+  max-width: 46ch;
+  margin: 0 auto 1rem;
+}
+
+.placeholderList {
+  text-align: left;
+  max-width: 40ch;
+  margin: 0 auto;
+  color: #565959;
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+
+.suggestionCard {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.suggestionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.suggestionTitle {
+  font-weight: 700;
+}
+
+.typeTag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+  color: #565959;
+}
+
+.statusTag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+}
+
+.statusPENDING {
+  background: #fff6e0;
+  color: #966a00;
+}
+
+.statusAPPROVED {
+  background: #eaf0fe;
+  color: var(--dis-blue);
+}
+
+.statusAPPLIED {
+  background: #eaf7ee;
+  color: #1d6b34;
+}
+
+.statusREJECTED,
+.statusEXPIRED {
+  background: #fff1e2;
+  color: var(--dis-orange-dark);
+}
+
+.suggestionMeta {
+  font-size: 0.78rem;
+  color: #565959;
+}
+
+.suggestionActions {
+  display: flex;
+  gap: 0.6rem;
+}

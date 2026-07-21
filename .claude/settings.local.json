@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(tasklist *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3001 --max-time 3)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000 --max-time 3)",
+      "Bash(netstat -ano)",
+      "Bash(npx eslint *)",
+      "Bash(curl *)",
+      "Bash(node --env-file=.env.local _cleanup_review.mjs)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/ --max-time 3)",
+      "Bash(curl -s http://localhost:3000/api/_debug_specs)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code} | Content-Type: %{content_type} | Size: %{size_download}\\\\n\" \"https://res.cloudinary.com/rti9v5qa/image/upload/e_background_removal,f_png/v1784325472/dis-shop/products/ufayaozuqp2pce9ahmha.jpg\")",
+      "Bash(F=/c/Users/dell/AppData/Local/Temp/claude/c--Users-dell-dis-shop/ae76cc83-0918-493c-b980-865bfbb1b7f7/scratchpad/home4.html *)",
+      "Read(//c/Users/dell/AppData/Local/Temp/claude/c--Users-dell-dis-shop/ae76cc83-0918-493c-b980-865bfbb1b7f7/scratchpad/**)",
+      "Bash(find /c/Users/dell/dis-shop/public -type f \\\\\\( -iname \"*.jpg\" -o -iname \"*.jpeg\" -o -iname \"*.png\" -o -iname \"*.webp\" \\\\\\) -newer /c/Users/dell/dis-shop/package.json 2>/dev/null *)",
+      "Read(//c/Users/dell/Downloads/**)",
+      "Bash(node -e ' *)",
+      "Bash(rm -f \"c:/Users/dell/dis-shop/components/PartnerBrands.js\" \"c:/Users/dell/dis-shop/styles/PartnerBrands.module.css\" && echo \"removed\")",
+      "PowerShell(taskkill /PID 18184 /T /F)",
+      "Bash(grep -o '\"ProjectQuoteCTA-module[^\"]*\"[^}]*Request a Quotation for[^!]\\\\{0,150\\\\}')",
+      "PowerShell(taskkill /PID 8276 /T /F)",
+      "Bash(node -e \"console.log\\('typescript', require\\('./node_modules/typescript/package.json'\\).version\\)\")",
+      "Bash(xargs grep -l \"typescript\" -i)",
+      "Bash(npx tsc *)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\dell\\dis-shop\\components"
+    ]
+  }
+}

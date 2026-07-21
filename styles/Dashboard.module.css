@@ -1,0 +1,143 @@
+.wrap {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+  min-height: 60vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.heading {
+  font-size: 1.6rem;
+}
+
+.email {
+  color: #565959;
+  font-size: 0.9rem;
+}
+
+.logoutBtn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.4rem 1rem;
+  text-align: center;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.statCard:hover {
+  box-shadow: 0 6px 16px rgba(8, 26, 58, 0.12);
+  transform: translateY(-2px);
+}
+
+.statValue {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--dis-navy);
+}
+
+.statLabel {
+  font-size: 0.82rem;
+  color: #565959;
+  font-weight: 600;
+}
+
+.section {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.4rem;
+}
+
+.sectionHeadingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sectionHeadingRow h2 {
+  font-size: 1.1rem;
+}
+
+.sectionHeadingRow a {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--dis-blue);
+}
+
+.empty {
+  color: #565959;
+  font-size: 0.9rem;
+}
+
+.orderList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.orderRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: 0.8rem;
+  align-items: center;
+  font-size: 0.85rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.orderRow:last-child {
+  border-bottom: none;
+}
+
+.orderId {
+  font-weight: 700;
+}
+
+.status {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.orderTotal {
+  font-weight: 700;
+  text-align: right;
+}
+
+@media (max-width: 600px) {
+  .orderRow {
+    grid-template-columns: 1fr 1fr;
+  }
+}

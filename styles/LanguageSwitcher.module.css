@@ -1,0 +1,54 @@
+.root {
+  position: relative;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: none;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+}
+
+.trigger:hover {
+  color: #fff;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 150;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(6, 35, 65, 0.25);
+  padding: 0.4rem;
+  min-width: 170px;
+}
+
+.option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.5rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.option:not(:disabled):hover {
+  background: var(--surface);
+  color: var(--dis-blue);
+}
+
+.option:disabled {
+  color: #9aa5b1;
+  cursor: default;
+}

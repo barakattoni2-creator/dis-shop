@@ -1,0 +1,43 @@
+.breadcrumbs {
+  margin: 0.9rem 0 1.2rem;
+  overflow-x: auto;
+}
+
+.list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  list-style: none;
+  font-size: 0.85rem;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.link {
+  color: #565959;
+  font-weight: 600;
+}
+
+.link:hover {
+  color: var(--dis-blue);
+  text-decoration: underline;
+}
+
+.current {
+  color: var(--dis-navy);
+  font-weight: 700;
+}
+
+.separator {
+  color: #b8bcc2;
+}
+
+[dir="rtl"] .breadcrumbs .list {
+  direction: rtl;
+}

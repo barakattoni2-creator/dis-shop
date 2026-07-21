@@ -1,0 +1,98 @@
+.section {
+  padding: 56px 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.headingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.heading {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--dis-navy);
+}
+
+.viewAll {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--dis-orange-dark);
+  white-space: nowrap;
+}
+
+.viewAll:hover {
+  text-decoration: underline;
+}
+
+/* auto-fill (not auto-fit) — auto-fit collapses unused tracks and lets the
+   remaining tiles stretch to fill the freed space, which blows a handful of
+   brand tiles up to fill the entire row width. auto-fill keeps the tracks
+   reserved instead, so tiles stay a normal, consistent size regardless of
+   how many brands there are. */
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  justify-content: start;
+  gap: 1rem;
+}
+
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.4rem 1rem;
+  min-height: 88px;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.tile:hover {
+  border-color: var(--dis-orange);
+  transform: translateY(-2px);
+}
+
+.logo {
+  max-width: 100%;
+  max-height: 40px;
+  object-fit: contain;
+}
+
+.logoFallback {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--dis-navy);
+  letter-spacing: 0.3px;
+  text-align: center;
+}
+
+.tile:hover .logoFallback {
+  color: var(--dis-orange-dark);
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 36px 1rem;
+  }
+
+  .heading {
+    font-size: 1.3rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.7rem;
+  }
+
+  .tile {
+    padding: 1rem 0.5rem;
+    font-size: 0.85rem;
+  }
+}

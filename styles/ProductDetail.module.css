@@ -1,0 +1,524 @@
+.breadcrumb {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem 0;
+  font-size: 0.8rem;
+  color: #565959;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+  color: var(--dis-blue);
+}
+
+.layout {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 2rem;
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.imageCol {
+  min-width: 0;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.brandRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brandLogo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.brand {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--dis-blue);
+}
+
+.brand:hover {
+  text-decoration: underline;
+}
+
+.categoryTag {
+  margin-left: auto;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--dis-navy);
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 0.25rem 0.8rem;
+}
+
+.categoryTag:hover {
+  color: var(--dis-orange-dark);
+}
+
+.name {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.reviews {
+  color: var(--dis-blue);
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.price {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--dis-price);
+}
+
+.originalPrice {
+  font-size: 1rem;
+  color: #565959;
+  text-decoration: line-through;
+}
+
+.discount {
+  font-size: 0.9rem;
+  color: var(--dis-price);
+  font-weight: 700;
+  background: #fff1e2;
+  border-radius: 6px;
+  padding: 0.15rem 0.5rem;
+}
+
+.priceMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: #565959;
+}
+
+.rateNote {
+  color: #9aa5b1;
+}
+
+.oldPriceRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.4rem;
+}
+
+.saveLine {
+  font-size: 0.85rem;
+  color: #1a8a3d;
+  font-weight: 600;
+}
+
+.saveAmount {
+  color: #1a8a3d;
+  font-weight: 800;
+}
+
+.stockRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.stockBadge {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.inStock {
+  color: #1a8a3d;
+}
+
+.lowStock {
+  color: var(--dis-orange-dark);
+}
+
+.outOfStock {
+  color: var(--dis-price);
+}
+
+.sku {
+  font-size: 0.8rem;
+  color: #565959;
+}
+
+.buyBox {
+  margin-top: 1rem;
+  padding: 1.2rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(8, 26, 58, 0.08);
+}
+
+@media (min-width: 801px) {
+  .buyBox {
+    position: sticky;
+    top: 96px;
+    z-index: 10;
+  }
+}
+
+.description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--foreground);
+  margin-top: 0.6rem;
+}
+
+.specs {
+  margin-top: 0.5rem;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  max-width: 480px;
+}
+
+.specs th,
+.specs td {
+  text-align: left;
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.specs th {
+  color: #565959;
+  font-weight: 600;
+  width: 45%;
+}
+
+.qtyRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.qtyLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--dis-navy);
+}
+
+.qtyStepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 0.4rem 1rem;
+}
+
+.qtyStepper button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  color: var(--dis-navy);
+}
+
+.qtyStepper button:disabled {
+  color: #cbd3da;
+}
+
+.qtyStepper span {
+  min-width: 1.5rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.addBtn {
+  flex: 1 1 220px;
+  background: var(--dis-orange);
+  border: 1px solid var(--dis-orange-dark);
+  border-radius: 26px;
+  padding: 1rem 2rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.addBtn:hover:not(:disabled) {
+  background: var(--dis-orange-dark);
+}
+
+.addBtn:disabled {
+  background: #cbd3da;
+  border-color: #b7c0c9;
+  color: #7a828a;
+  cursor: not-allowed;
+}
+
+.buyNowBtn {
+  flex: 1 1 220px;
+  background: var(--dis-blue);
+  border: 1px solid var(--dis-blue);
+  border-radius: 26px;
+  padding: 1rem 2rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.buyNowBtn:hover:not(:disabled) {
+  background: var(--dis-navy);
+  border-color: var(--dis-navy);
+}
+
+.buyNowBtn:disabled {
+  background: #cbd3da;
+  border-color: #b7c0c9;
+  color: #7a828a;
+  cursor: not-allowed;
+}
+
+.secondaryActions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+}
+
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--dis-navy);
+}
+
+.secondaryBtn:hover {
+  border-color: var(--dis-orange);
+  color: var(--dis-orange-dark);
+}
+
+.secondaryBtnActive {
+  background: #fff1e2;
+  border-color: var(--dis-orange-dark);
+  color: var(--dis-orange-dark);
+}
+
+.trustRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem 1.4rem;
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.trustRow span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #565959;
+}
+
+.deliveryBlock {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.6rem;
+  margin-top: 0.9rem;
+  padding: 0.9rem 1rem;
+  background: var(--surface);
+  border-radius: 14px;
+}
+
+.deliveryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.deliveryLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: #7a8699;
+}
+
+.deliveryValue {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--dis-navy);
+}
+
+.contentWidth {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.whatsappBtn {
+  display: inline-flex;
+  align-items: center;
+  background: #25d366;
+  border: 1px solid #1ea952;
+  border-radius: 24px;
+  padding: 0.75rem 1.8rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.whatsappBtn:hover {
+  background: #1ea952;
+}
+
+/* Mobile sticky action bar — hidden on desktop/tablet, shown below 700px as
+   a quick-access convenience while scrolled past the purchase card. The
+   in-page Add to Cart / Buy Now / WhatsApp buttons stay visible too (full
+   width, stacked) so Buy Now is never mobile-only-unreachable. */
+.mobileActionBar {
+  display: none;
+}
+
+/* Tablet: still two columns, just narrower/more balanced than desktop's
+   2fr/3fr ratio, rather than jumping straight to a single stacked column. */
+@media (max-width: 1100px) and (min-width: 701px) {
+  .layout {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.75rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .layout {
+    grid-template-columns: 1fr;
+    padding-bottom: 5.5rem;
+  }
+
+  .price {
+    font-size: 1.6rem;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .addBtn,
+  .buyNowBtn,
+  .whatsappBtn {
+    width: 100%;
+    flex: none;
+    justify-content: center;
+  }
+
+  .mobileActionBar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 250;
+    display: flex;
+    gap: 0.6rem;
+    padding: 0.7rem 1rem calc(0.7rem + env(safe-area-inset-bottom));
+    background: #fff;
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -8px 20px rgba(8, 26, 58, 0.12);
+  }
+
+  .mobileWishlistBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    flex: 0 0 auto;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    color: var(--dis-navy);
+  }
+
+  .mobileWishlistBtn.wishlisted {
+    background: #fff1e2;
+    border-color: var(--dis-orange-dark);
+    color: var(--dis-orange-dark);
+  }
+
+  .mobileAddBtn {
+    flex: 1;
+    background: var(--dis-orange);
+    border: 1px solid var(--dis-orange-dark);
+    border-radius: 24px;
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .mobileAddBtn:disabled {
+    background: #cbd3da;
+    border-color: #b7c0c9;
+    color: #7a828a;
+  }
+
+  .mobileWhatsappBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    flex: 0 0 auto;
+    background: #25d366;
+    border: 1px solid #1ea952;
+    border-radius: 24px;
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .layout {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

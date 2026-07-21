@@ -1,0 +1,137 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  overflow-x: hidden;
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+[dir="rtl"] .root {
+  animation-name: slideInRtl;
+}
+
+@keyframes slideInRtl {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.backRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 0.4rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.backArrow {
+  font-size: 1.1rem;
+}
+
+[dir="rtl"] .backArrow {
+  transform: scaleX(-1);
+}
+
+.currentHeading {
+  padding: 0.5rem 0.4rem;
+}
+
+.currentHeadingLink {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--dis-orange);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rowLink {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.7rem 0.4rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.rowIcon {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.rowIconImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rowNames {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.rowName {
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rowNameAr {
+  font-size: 0.74rem;
+  opacity: 0.75;
+  direction: rtl;
+}
+
+.expandBtn {
+  flex: none;
+  width: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: #fff;
+  opacity: 0.7;
+}
+
+[dir="rtl"] .expandBtn {
+  transform: scaleX(-1);
+}
