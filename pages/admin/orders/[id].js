@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Image from "next/image";
 import AdminLayout from "@/features/admin/AdminLayout";
 import DeliveryLocationPreview from "@/features/track/DeliveryLocationPreview";
 import { requireAdminPage } from "@/lib/adminAuth";
@@ -400,7 +401,13 @@ export default function AdminOrderDetailPage({ email, role, dbConfigured }) {
                     <tr key={item.id}>
                       <td>
                         {item.imageUrl ? (
-                          <img src={item.imageUrl} alt={item.name} className={styles.itemThumb} />
+                          <Image
+                            src={item.imageUrl}
+                            alt={item.name}
+                            width={44}
+                            height={44}
+                            className={styles.itemThumb}
+                          />
                         ) : (
                           <span className={styles.itemThumbEmpty}>📦</span>
                         )}

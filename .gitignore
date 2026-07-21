@@ -41,3 +41,13 @@ yarn-error.log*
 next-env.d.ts
 
 /lib/generated/prisma
+
+# Claude Code — local/per-machine only, never shared (session locks,
+# machine-specific tool-permission paths). .claude/settings.json (the
+# shared allowlist) stays tracked.
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# stray shell-redirect artifacts from ad-hoc terminal commands
+pushlog.txt
+*.log

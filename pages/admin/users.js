@@ -42,7 +42,6 @@ function UsersPanel({ currentEmail, dbConfigured }) {
 
   useEffect(() => {
     if (dbConfigured) reload();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dbConfigured]);
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
