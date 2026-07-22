@@ -28,6 +28,7 @@ export const PERMISSIONS = {
   MANAGE_USERS: "manage_users",
   VIEW_FINANCIALS: "view_financials",
   MANAGE_AI: "manage_ai",
+  MANAGE_MEDIA: "manage_media",
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -50,6 +51,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     PERMISSIONS.MANAGE_BANNERS,
     PERMISSIONS.MANAGE_CUSTOMERS,
     PERMISSIONS.MANAGE_SEARCH,
+    PERMISSIONS.MANAGE_MEDIA,
   ],
   SALES: [
     PERMISSIONS.VIEW_DASHBOARD,
@@ -63,6 +65,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     PERMISSIONS.MANAGE_CATEGORIES,
     PERMISSIONS.MANAGE_BRANDS,
     PERMISSIONS.MANAGE_DELIVERIES,
+    PERMISSIONS.MANAGE_MEDIA,
   ],
   DELIVERY: [PERMISSIONS.VIEW_DASHBOARD, PERMISSIONS.MANAGE_DELIVERIES],
 };
@@ -88,6 +91,7 @@ export const ROUTE_PERMISSIONS: Record<string, Permission> = {
   "/admin/orders": PERMISSIONS.MANAGE_ORDERS,
   "/admin/deliveries": PERMISSIONS.MANAGE_DELIVERIES,
   "/admin/banners": PERMISSIONS.MANAGE_BANNERS,
+  "/admin/media": PERMISSIONS.MANAGE_MEDIA,
   "/admin/customers": PERMISSIONS.MANAGE_CUSTOMERS,
   "/admin/settings": PERMISSIONS.MANAGE_SETTINGS,
   "/admin/settings/search": PERMISSIONS.MANAGE_SEARCH,

@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Head from "next/head";
 import { ROUTE_PERMISSIONS, ROLE_LABELS, hasPermission } from "@/data/adminRoles";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import styles from "@/styles/AdminLayout.module.css";
 
 const NAV_ITEMS = [
@@ -12,6 +13,7 @@ const NAV_ITEMS = [
   { href: "/admin/categories", label: "Categories", icon: "🗂️" },
   { href: "/admin/brands", label: "Brands", icon: "🏷️" },
   { href: "/admin/banners", label: "Banners", icon: "🖼️" },
+  { href: "/admin/media", label: "Media Library", icon: "📷" },
   { href: "/admin/orders", label: "Orders", icon: "🧾" },
   { href: "/admin/deliveries", label: "Deliveries", icon: "🚚" },
   { href: "/admin/customers", label: "Customers", icon: "👥" },
@@ -67,7 +69,7 @@ export default function AdminLayout({ title, email, role, children }) {
       <Head>
         <title>{title ? `${title} — DIS Admin` : "DIS Admin"}</title>
       </Head>
-      <div className={styles.shell}>
+      <div className={`${styles.shell} admin-shell`}>
         <header className={styles.mobileTopbar}>
           <button
             type="button"
@@ -79,6 +81,7 @@ export default function AdminLayout({ title, email, role, children }) {
             ☰
           </button>
           <span className={styles.mobileTitle}>{title}</span>
+          <ThemeToggle />
           <button
             type="button"
             className={styles.mobileLogoutBtn}
@@ -128,6 +131,7 @@ export default function AdminLayout({ title, email, role, children }) {
                   {role && <span className={styles.roleTag}>{ROLE_LABELS[role] || role}</span>}
                 </span>
               )}
+              <ThemeToggle />
               <button className={styles.logoutBtn} onClick={handleLogout}>
                 Sign Out
               </button>

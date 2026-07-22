@@ -10,6 +10,24 @@
   --foreground: #16202b;
   --surface: #f2f6fb;
   --border: #d7e0ea;
+  --muted-fg: #565959;
+}
+
+/* Dark-mode token overrides, scoped to .admin-shell (AdminLayout's root)
+   rather than bare `.dark` on <html> — next-themes' `.dark` class persists
+   across client-side navigation, so an admin who toggles dark mode then
+   clicks "Back to Store" would otherwise carry `.dark` onto the storefront
+   too. Scoping to .admin-shell means these overrides only ever apply
+   inside /admin, and the storefront (which never renders that class) is
+   completely unaffected regardless of the toggle's state. Brand colors
+   (--dis-navy/--dis-orange/--dis-blue) deliberately stay constant — only
+   the neutral background/surface/border/foreground tokens change. */
+.dark .admin-shell {
+  --background: #10141f;
+  --foreground: #e7ebf3;
+  --surface: #181d2c;
+  --border: #2b3247;
+  --muted-fg: #9aa3b8;
 }
 
 html,

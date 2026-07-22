@@ -1,6 +1,8 @@
 import { useState } from "react";
 import styles from "@/styles/Admin.module.css";
-import type { PlainBanner } from "@/types/domain";
+import MediaPicker from "@/features/admin/MediaPicker";
+import BannerPreview from "@/features/admin/BannerPreview";
+import type { PlainBanner, PlainMediaAsset } from "@/types/domain";
 
 export interface BannerFormValues {
   eyebrow: string;
@@ -72,6 +74,8 @@ export default function BannerForm({ initial, onSubmit, onCancel }: BannerFormPr
   );
   const [uploading, setUploading] = useState<"" | "desktop" | "mobile">("");
   const [uploadError, setUploadError] = useState("");
+  const [pickerTarget, setPickerTarget] = useState<"imageUrl" | "mobileImageUrl" | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const set =
     (field: keyof BannerFormValues) =>
@@ -151,6 +155,14 @@ export default function BannerForm({ initial, onSubmit, onCancel }: BannerFormPr
             className={styles.input}
             onChange={handleImageChange("imageUrl", "desktop")}
           />
+          <button
+            type="button"
+            className={styles.cancelBtn}
+            style={{ marginTop: "0.4rem" }}
+            onClick={() => setPickerTarget("imageUrl")}
+          >
+            Choose from Library
+          </button>
         </label>
         <label className={styles.label}>
           Mobile Image (optional — falls back to desktop image)
@@ -160,6 +172,14 @@ export default function BannerForm({ initial, onSubmit, onCancel }: BannerFormPr
             className={styles.input}
             onChange={handleImageChange("mobileImageUrl", "mobile")}
           />
+          <button
+            type="button"
+            className={styles.cancelBtn}
+            style={{ marginTop: "0.4rem" }}
+            onClick={() => setPickerTarget("mobileImageUrl")}
+          >
+            Choose from Library
+          </button>
         </label>
       </div>
       {uploading && <p className={styles.uploadStatus}>Uploading {uploading} image…</p>}
@@ -232,10 +252,42 @@ export default function BannerForm({ initial, onSubmit, onCancel }: BannerFormPr
         <button type="submit" className={styles.saveBtn} disabled={uploading !== ""}>
           {initial ? "Save Changes" : "Add Banner"}
         </button>
+        <button
+          type="button"
+          className={styles.cancelBtn}
+          onClick={() => setShowPreview(true)}
+          disabled={!form.imageUrl && !form.mobileImageUrl}
+        >
+          Preview
+        </button>
         <button type="button" className={styles.cancelBtn} onClick={onCancel}>
           Cancel
         </button>
       </div>
+
+      {pickerTarget && (
+        <MediaPicker
+          onClose={() => setPickerTarget(null)}
+          onChoose={(asset: PlainMediaAsset) => {
+            setForm((prev) => ({ ...prev, [pickerTarget]: asset.url }));
+            setPickerTarget(null);
+          }}
+        />
+      )}
+
+      {showPreview && (
+        <BannerPreview
+          banner={{
+            eyebrow: form.eyebrow,
+            title: form.title,
+            subtitle: form.subtitle,
+            ctaLabel: form.ctaLabel,
+            imageUrl: form.imageUrl,
+            mobileImageUrl: form.mobileImageUrl,
+          }}
+          onClose={() => setShowPreview(false)}
+        />
+      )}
     </form>
   );
 }

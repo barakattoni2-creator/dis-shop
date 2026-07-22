@@ -1,0 +1,146 @@
+/* Tailwind for the admin panel only (starting with the Product Manager) —
+   deliberately imports just theme + utilities, NOT tailwindcss/preflight.
+   Preflight resets global element defaults (headings, lists, buttons...)
+   which the storefront's existing CSS-Modules styling depends on looking
+   unreset. Everything shadcn/ui components need from a reset is instead
+   scoped to .shadcn-root below, so the storefront is completely unaffected
+   by this file even though it's imported globally in pages/_app.js (Next's
+   Pages Router only allows non-module global CSS from _app.js, so utility
+   classes have to be available app-wide even though we only ever use them
+   under /admin).
+
+   Every raw variable below is scoped to .shadcn-root (not bare :root/.dark)
+   and namespaced --sc-* — the storefront's own styles/globals.css already
+   defines --background/--foreground/--border/--surface for its CSS Modules,
+   and declaring the same names at :root here would silently override them
+   everywhere (whichever stylesheet loads last in pages/_app.js wins for a
+   bare :root rule, storefront included) — scoping avoids that collision
+   entirely regardless of import order. */
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+.shadcn-root {
+  --radius: 0.625rem;
+  --sc-background: oklch(1 0 0);
+  --sc-foreground: oklch(0.145 0.02 265);
+  --sc-card: oklch(1 0 0);
+  --sc-card-foreground: oklch(0.145 0.02 265);
+  --sc-popover: oklch(1 0 0);
+  --sc-popover-foreground: oklch(0.145 0.02 265);
+  /* DIS Shop brand blue (#0a4dff), matching styles/globals.css --dis-blue */
+  --sc-primary: oklch(0.47 0.24 264);
+  --sc-primary-foreground: oklch(0.985 0 0);
+  --sc-secondary: oklch(0.96 0.01 265);
+  --sc-secondary-foreground: oklch(0.205 0.02 265);
+  --sc-muted: oklch(0.96 0.01 265);
+  --sc-muted-foreground: oklch(0.5 0.02 265);
+  /* DIS Shop brand orange (#ff6a00), matching styles/globals.css --dis-orange */
+  --sc-accent: oklch(0.7 0.19 45);
+  --sc-accent-foreground: oklch(0.985 0 0);
+  --sc-destructive: oklch(0.577 0.245 27.325);
+  --sc-destructive-foreground: oklch(0.985 0 0);
+  --sc-border: oklch(0.9 0.01 265);
+  --sc-input: oklch(0.9 0.01 265);
+  --sc-ring: oklch(0.47 0.24 264 / 0.5);
+  --sc-success: oklch(0.6 0.15 145);
+  --sc-success-foreground: oklch(0.985 0 0);
+  --sc-warning: oklch(0.75 0.15 75);
+  --sc-warning-foreground: oklch(0.145 0.02 265);
+}
+
+.dark .shadcn-root {
+  --sc-background: oklch(0.15 0.02 265);
+  --sc-foreground: oklch(0.96 0.01 265);
+  --sc-card: oklch(0.19 0.02 265);
+  --sc-card-foreground: oklch(0.96 0.01 265);
+  --sc-popover: oklch(0.19 0.02 265);
+  --sc-popover-foreground: oklch(0.96 0.01 265);
+  --sc-primary: oklch(0.65 0.2 264);
+  --sc-primary-foreground: oklch(0.145 0.02 265);
+  --sc-secondary: oklch(0.26 0.02 265);
+  --sc-secondary-foreground: oklch(0.96 0.01 265);
+  --sc-muted: oklch(0.26 0.02 265);
+  --sc-muted-foreground: oklch(0.68 0.02 265);
+  --sc-accent: oklch(0.7 0.19 45);
+  --sc-accent-foreground: oklch(0.145 0.02 265);
+  --sc-destructive: oklch(0.65 0.22 27.325);
+  --sc-destructive-foreground: oklch(0.145 0.02 265);
+  --sc-border: oklch(1 0 0 / 12%);
+  --sc-input: oklch(1 0 0 / 18%);
+  --sc-ring: oklch(0.65 0.2 264 / 0.5);
+  --sc-success: oklch(0.7 0.15 145);
+  --sc-success-foreground: oklch(0.145 0.02 265);
+  --sc-warning: oklch(0.78 0.15 75);
+  --sc-warning-foreground: oklch(0.145 0.02 265);
+}
+
+@theme inline {
+  --color-background: var(--sc-background);
+  --color-foreground: var(--sc-foreground);
+  --color-card: var(--sc-card);
+  --color-card-foreground: var(--sc-card-foreground);
+  --color-popover: var(--sc-popover);
+  --color-popover-foreground: var(--sc-popover-foreground);
+  --color-primary: var(--sc-primary);
+  --color-primary-foreground: var(--sc-primary-foreground);
+  --color-secondary: var(--sc-secondary);
+  --color-secondary-foreground: var(--sc-secondary-foreground);
+  --color-muted: var(--sc-muted);
+  --color-muted-foreground: var(--sc-muted-foreground);
+  --color-accent: var(--sc-accent);
+  --color-accent-foreground: var(--sc-accent-foreground);
+  --color-destructive: var(--sc-destructive);
+  --color-destructive-foreground: var(--sc-destructive-foreground);
+  --color-success: var(--sc-success);
+  --color-success-foreground: var(--sc-success-foreground);
+  --color-warning: var(--sc-warning);
+  --color-warning-foreground: var(--sc-warning-foreground);
+  --color-border: var(--sc-border);
+  --color-input: var(--sc-input);
+  --color-ring: var(--sc-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* Scoped reset for shadcn/ui components — everything Radix + shadcn need
+   from a "normal" baseline, applied only inside .shadcn-root (wrapped
+   around the Product Manager's page root) instead of globally, so the
+   storefront's own element defaults are never touched. */
+.shadcn-root {
+  box-sizing: border-box;
+  color: var(--color-foreground);
+  background: var(--color-background);
+  font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+}
+
+.shadcn-root *,
+.shadcn-root *::before,
+.shadcn-root *::after {
+  box-sizing: inherit;
+  border-color: var(--color-border);
+  outline-color: var(--color-ring);
+}
+
+.shadcn-root button,
+.shadcn-root input,
+.shadcn-root optgroup,
+.shadcn-root select,
+.shadcn-root textarea {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+.shadcn-root button {
+  background-image: none;
+  cursor: pointer;
+}

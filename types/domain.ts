@@ -13,27 +13,52 @@ export type { AdminRole, Permission };
 // Grown incrementally as each phase of the TS migration touches the file
 // that owns a shape — see AGENTS.md's "TypeScript migration in progress".
 
+export type ProductStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";
+
 export interface PlainProduct {
   id: string;
   name: string;
+  slug: string | null;
   category: string | null;
   brand: string | null;
   brandLogo: string | null;
   price: number;
   originalPrice: number;
+  costPrice: number | null;
+  taxRate: number | null;
   rating: number;
   reviews: number;
   badge: string | null;
   isNew: boolean;
+  bestSeller: boolean;
   color: string;
   imageUrl: string | null;
+  mobileImageUrl: string | null;
   images: string[];
   videoUrl: string | null;
+  catalogPdfUrl: string | null;
   stock: number;
+  lowStockThreshold: number | null;
+  warehouse: string | null;
+  weightKg: number | null;
+  lengthCm: number | null;
+  widthCm: number | null;
+  heightCm: number | null;
   sku: string | null;
+  barcode: string | null;
   featured: boolean;
+  status: ProductStatus;
+  tags: string[];
   description: string | null;
+  shortDescription: string | null;
   specs: Record<string, string> | null;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  metaKeywords: string | null;
+  ogImage: string | null;
+  relatedProductIds: string[];
+  crossSellProductIds: string[];
+  upSellProductIds: string[];
   updatedAt: string | null;
 }
 
@@ -130,6 +155,18 @@ export interface PlainBanner {
   startDate: string | null;
   endDate: string | null;
   active: boolean;
+}
+
+export interface PlainMediaAsset {
+  id: string;
+  url: string;
+  publicId: string;
+  filename: string;
+  width: number | null;
+  height: number | null;
+  bytes: number | null;
+  format: string | null;
+  createdAt: string;
 }
 
 export interface PlainAdminUser {

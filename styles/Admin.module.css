@@ -22,7 +22,7 @@
   border-radius: 8px;
   padding: 0.9rem 1.1rem;
   font-size: 0.85rem;
-  color: #565959;
+  color: var(--muted-fg);
   margin-bottom: 1.5rem;
   line-height: 1.5;
 }
@@ -46,12 +46,12 @@
   display: block;
   font-size: 1.6rem;
   font-weight: 800;
-  color: var(--dis-navy);
+  color: var(--foreground);
 }
 
 .statLabel {
   font-size: 0.82rem;
-  color: #565959;
+  color: var(--muted-fg);
   font-weight: 600;
 }
 
@@ -69,7 +69,7 @@
 }
 
 .empty {
-  color: #565959;
+  color: var(--muted-fg);
   padding: 2rem 0;
 }
 
@@ -165,7 +165,7 @@
 }
 
 .modal {
-  background: #fff;
+  background: var(--background);
   border-radius: 10px;
   padding: 1.5rem;
   width: 100%;
@@ -214,6 +214,8 @@
   padding: 0.55rem 0.7rem;
   font-size: 0.95rem;
   font-family: inherit;
+  background: var(--background);
+  color: var(--foreground);
 }
 
 .textarea {
@@ -223,7 +225,7 @@
 
 .uploadStatus {
   font-size: 0.85rem;
-  color: #565959;
+  color: var(--muted-fg);
 }
 
 .uploadError {
@@ -338,7 +340,7 @@
   border-radius: 8px;
   padding: 0.9rem 1.2rem;
   font-weight: 700;
-  color: var(--dis-navy);
+  color: var(--foreground);
 }
 
 .quickLink:hover {
@@ -376,7 +378,7 @@
   .table td::before {
     content: attr(data-label) ": ";
     font-weight: 700;
-    color: #565959;
+    color: var(--muted-fg);
   }
 
   .actionsCell {

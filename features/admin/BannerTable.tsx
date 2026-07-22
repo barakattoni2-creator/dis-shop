@@ -1,6 +1,7 @@
 import { useState } from "react";
 import adminStyles from "@/styles/Admin.module.css";
 import styles from "@/styles/BannerTable.module.css";
+import BannerPreview from "@/features/admin/BannerPreview";
 import type { PlainBanner } from "@/types/domain";
 
 type DropZone = "above" | "below" | null;
@@ -36,12 +37,22 @@ interface BannerRowProps {
   onEdit: (b: PlainBanner) => void;
   onDelete: (b: PlainBanner) => void;
   onToggleActive: (b: PlainBanner) => void;
+  onPreview: (b: PlainBanner) => void;
   dragState: DragState;
   setDragState: React.Dispatch<React.SetStateAction<DragState>>;
   onReorder: (draggedId: string, target: PlainBanner, zone: "above" | "below") => void;
 }
 
-function BannerRow({ banner, onEdit, onDelete, onToggleActive, dragState, setDragState, onReorder }: BannerRowProps) {
+function BannerRow({
+  banner,
+  onEdit,
+  onDelete,
+  onToggleActive,
+  onPreview,
+  dragState,
+  setDragState,
+  onReorder,
+}: BannerRowProps) {
   const isDragging = dragState.draggingId === banner.id;
   const dropZone = dragState.overId === banner.id ? dragState.overZone : null;
   const status = computeStatus(banner);
@@ -119,6 +130,14 @@ function BannerRow({ banner, onEdit, onDelete, onToggleActive, dragState, setDra
         <span className={`${styles.statusBadge} ${status.className}`}>{status.label}</span>
       </td>
       <td className={adminStyles.actionsCell}>
+        <button
+          type="button"
+          className={adminStyles.editBtn}
+          onClick={() => onPreview(banner)}
+          disabled={!banner.imageUrl}
+        >
+          Preview
+        </button>
         <button type="button" className={adminStyles.editBtn} onClick={() => onToggleActive(banner)}>
           {banner.active ? "Disable" : "Enable"}
         </button>
@@ -143,6 +162,7 @@ interface BannerTableProps {
 
 export default function BannerTable({ banners, onEdit, onDelete, onToggleActive, onReorder }: BannerTableProps) {
   const [dragState, setDragState] = useState<DragState>({ draggingId: null, overId: null, overZone: null });
+  const [previewBanner, setPreviewBanner] = useState<PlainBanner | null>(null);
 
   if (banners.length === 0) {
     return <p className={adminStyles.empty}>No banners yet. The homepage will show its default slides.</p>;
@@ -180,6 +200,7 @@ export default function BannerTable({ banners, onEdit, onDelete, onToggleActive,
               onEdit={onEdit}
               onDelete={onDelete}
               onToggleActive={onToggleActive}
+              onPreview={setPreviewBanner}
               dragState={dragState}
               setDragState={setDragState}
               onReorder={handleReorder}
@@ -187,6 +208,20 @@ export default function BannerTable({ banners, onEdit, onDelete, onToggleActive,
           ))}
         </tbody>
       </table>
+
+      {previewBanner && (
+        <BannerPreview
+          banner={{
+            eyebrow: previewBanner.eyebrow || "",
+            title: previewBanner.title,
+            subtitle: previewBanner.subtitle || "",
+            ctaLabel: previewBanner.ctaLabel || "",
+            imageUrl: previewBanner.imageUrl || "",
+            mobileImageUrl: previewBanner.mobileImageUrl || "",
+          }}
+          onClose={() => setPreviewBanner(null)}
+        />
+      )}
     </div>
   );
 }

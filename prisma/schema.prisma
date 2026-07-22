@@ -97,34 +97,91 @@ model Brand {
   updatedAt DateTime  @updatedAt
 }
 
+// DRAFT/ARCHIVED are hidden from every storefront-facing query
+// (fetchProducts in services/db/products.ts) — only PUBLISHED shows.
+// Existing rows default to PUBLISHED (not DRAFT) when this column lands,
+// so the live storefront's current catalog doesn't vanish on migration;
+// new products still default to Published too (an admin explicitly picks
+// Draft for anything not ready to sell, same as Shopify's own convention
+// once you're retrofitting onto a catalog that's already live).
+enum ProductStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
 model Product {
-  id             String                @id @default(cuid())
-  name           String
-  description    String?
-  price          Float
-  originalPrice  Float?
-  rating         Float                 @default(4.5)
-  reviews        Int                   @default(0)
-  badge          String?
-  isNew          Boolean               @default(false)
-  color          String                @default("#E5ECF3")
-  imageUrl       String?
-  images         Json?
-  videoUrl       String?
-  stock          Int                   @default(0)
-  sku            String?               @unique
-  featured       Boolean               @default(false)
-  specs          Json?
-  categoryId     String
-  category       Category              @relation(fields: [categoryId], references: [id])
-  brandId        String?
-  brand          Brand?                @relation(fields: [brandId], references: [id])
-  orderItems     OrderItem[]
-  productReviews Review[]
-  searchKeyword  ProductSearchKeyword?
-  searchEvents   SearchEvent[]
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
+  id               String                @id @default(cuid())
+  name             String
+  // Nullable (existing rows have none until an admin (re)saves them) but
+  // still @unique — Postgres allows multiple NULLs in a unique column, so
+  // this is safe with zero existing values, and product/[id].js still
+  // routes by id, not slug, so this is additive, not a routing change.
+  slug             String?               @unique
+  description      String?
+  shortDescription String?
+  price            Float
+  // "Compare at" price — shown struck-through; pre-existing field, reused
+  // as-is rather than adding a redundant column for the same concept.
+  originalPrice    Float?
+  // Internal-only — never sent to any storefront-facing query/prop.
+  costPrice        Float?
+  // Percentage, e.g. 18 for 18% — storefront price display stays
+  // tax-inclusive/exclusive exactly as it already is; this is additive
+  // data for admin/invoicing use, not wired into checkout math in this pass.
+  taxRate          Float?
+  rating           Float                 @default(4.5)
+  reviews          Int                   @default(0)
+  badge            String?
+  isNew            Boolean               @default(false)
+  bestSeller       Boolean               @default(false)
+  color            String                @default("#E5ECF3")
+  imageUrl         String?
+  mobileImageUrl   String?
+  images           Json?
+  videoUrl         String?
+  catalogPdfUrl    String?
+  stock            Int                   @default(0)
+  lowStockThreshold Int?
+  warehouse        String?
+  weightKg         Float?
+  lengthCm         Float?
+  widthCm          Float?
+  heightCm         Float?
+  // Odoo's natural analog is `default_code` — kept as `sku` since that's
+  // what this codebase and its storefront already call it everywhere;
+  // barcode is new and maps cleanly to Odoo's own `barcode` field on a
+  // future real sync (see services/odoo/products.ts — no sync exists yet).
+  sku              String?               @unique
+  barcode          String?
+  featured         Boolean               @default(false)
+  status           ProductStatus         @default(PUBLISHED)
+  tags             String[]              @default([])
+  specs            Json?
+  metaTitle        String?
+  metaDescription  String?
+  metaKeywords     String?
+  ogImage          String?
+  // Plain id arrays rather than join tables — these are small,
+  // admin-curated suggestion lists (not queried/joined at scale), same
+  // simplicity tradeoff as ProductSearchKeyword's String[] fields elsewhere
+  // in this schema.
+  relatedProductIds   String[]           @default([])
+  crossSellProductIds String[]           @default([])
+  upSellProductIds    String[]           @default([])
+  categoryId       String
+  category         Category              @relation(fields: [categoryId], references: [id])
+  brandId          String?
+  brand            Brand?                @relation(fields: [brandId], references: [id])
+  orderItems       OrderItem[]
+  productReviews   Review[]
+  searchKeyword    ProductSearchKeyword?
+  searchEvents     SearchEvent[]
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  @@index([status])
+  @@index([slug])
 }
 
 model Customer {
@@ -326,6 +383,27 @@ model Banner {
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// A reusable-image library, independent of any single Product/Category/
+// Banner — admins upload once here and pick the same image again elsewhere
+// (starting with the Banner form) instead of re-uploading duplicates.
+// publicId is Cloudinary's own asset id, kept so the file can actually be
+// removed from Cloudinary (not just this table) when deleted from the
+// library.
+model MediaAsset {
+  id        String   @id @default(cuid())
+  url       String
+  publicId  String
+  filename  String
+  width     Int?
+  height    Int?
+  bytes     Int?
+  format    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([filename])
 }
 
 // ---- AI System (Admin → AI, suggest_only by default — see AGENTS.md-level
