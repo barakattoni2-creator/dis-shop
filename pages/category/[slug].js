@@ -20,18 +20,20 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const category = await fetchCategoryDetail(params.slug);
+  const category = await fetchCategoryDetail(params.slug).catch(() => null);
 
   if (!category || category.active === false) {
-    const redirectTo = await findCategoryRedirect(params.slug);
+    const redirectTo = await findCategoryRedirect(params.slug).catch(() => null);
     if (redirectTo) {
       return { redirect: { destination: `/category/${redirectTo}`, permanent: true } };
     }
     return { notFound: true };
   }
 
-  const slugsInSubtree = await fetchCategoryAndDescendantSlugs(category.id, category.slug);
-  const allProducts = await fetchProducts();
+  const slugsInSubtree = await fetchCategoryAndDescendantSlugs(category.id, category.slug).catch(
+    () => [category.slug]
+  );
+  const allProducts = await fetchProducts().catch(() => []);
   const products = allProducts.filter((p) => slugsInSubtree.includes(p.category));
 
   return {

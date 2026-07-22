@@ -6,7 +6,7 @@ import { fetchProducts } from "@/lib/catalog";
 import styles from "@/styles/Search.module.css";
 
 export async function getStaticProps() {
-  const products = await fetchProducts();
+  const products = await fetchProducts().catch(() => []);
   return { props: { products }, revalidate: 60 };
 }
 

@@ -5,7 +5,10 @@ import { fetchProducts, fetchBrands } from "@/lib/catalog";
 import styles from "@/styles/BrandsPage.module.css";
 
 export async function getStaticProps() {
-  const [products, brands] = await Promise.all([fetchProducts(), fetchBrands()]);
+  const [products, brands] = await Promise.all([
+    fetchProducts().catch(() => []),
+    fetchBrands().catch(() => []),
+  ]);
   const counts = {};
   products.forEach((p) => {
     if (p.brand) counts[p.brand] = (counts[p.brand] || 0) + 1;

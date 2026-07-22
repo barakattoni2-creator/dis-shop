@@ -9,7 +9,7 @@ function subtreeProductCount(node) {
 }
 
 export async function getStaticProps() {
-  const tree = await fetchCategoryTree();
+  const tree = await fetchCategoryTree().catch(() => []);
   const mains = tree
     .filter((c) => c.level === 1)
     .map((c) => ({

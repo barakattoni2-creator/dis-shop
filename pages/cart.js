@@ -28,7 +28,7 @@ function EmptyCartIllustration(props) {
 }
 
 export async function getStaticProps() {
-  const products = await fetchProducts();
+  const products = await fetchProducts().catch(() => []);
   const featured = products.filter((p) => p.featured);
   const recommended = (featured.length > 0 ? featured : products).slice(0, 10);
   return { props: { recommended }, revalidate: 60 };

@@ -3,7 +3,7 @@ import FeaturedProducts from "@/components/FeaturedProducts";
 import { fetchProducts } from "@/lib/catalog";
 
 export async function getStaticProps() {
-  const products = await fetchProducts();
+  const products = await fetchProducts().catch(() => []);
   return { props: { products }, revalidate: 60 };
 }
 
