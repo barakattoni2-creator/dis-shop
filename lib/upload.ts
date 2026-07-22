@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
+import { cloudinaryFolderFor } from "@/data/mediaFolders";
 
 export function isUploadConfigured(): boolean {
   return Boolean(
@@ -43,12 +44,12 @@ export interface UploadedMedia {
   format: string | null;
 }
 
-// Separate folder ("dis-shop/media") and, unlike uploadProductImage, keeps
-// the full Cloudinary response — the Media Library needs public_id (to
-// support real deletion via deleteMediaAsset below) plus width/height/bytes
-// to show in the gallery, none of which uploadProductImage's callers ever
-// needed.
-export async function uploadMediaAsset(dataUrl: string): Promise<UploadedMedia> {
+// Separate folder ("dis-shop/media/<folder>") and, unlike
+// uploadProductImage, keeps the full Cloudinary response — the Media
+// Library needs public_id (to support real deletion via deleteMediaAsset
+// below) plus width/height/bytes to show in the gallery, none of which
+// uploadProductImage's callers ever needed.
+export async function uploadMediaAsset(dataUrl: string, folder = "General"): Promise<UploadedMedia> {
   if (!isUploadConfigured()) {
     throw new Error(
       "Image upload isn't configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET in .env.local."
@@ -56,7 +57,37 @@ export async function uploadMediaAsset(dataUrl: string): Promise<UploadedMedia> 
   }
   ensureConfigured();
   const result = await cloudinary.uploader.upload(dataUrl, {
-    folder: "dis-shop/media",
+    folder: cloudinaryFolderFor(folder),
+    resource_type: "image",
+  });
+  return {
+    url: result.secure_url,
+    publicId: result.public_id,
+    width: result.width ?? null,
+    height: result.height ?? null,
+    bytes: result.bytes ?? null,
+    format: result.format ?? null,
+  };
+}
+
+// Re-uploads new file content to the SAME Cloudinary public_id — the URL
+// never changes, so every Product/Category/Brand/Banner that stored this
+// asset's URL directly (there's no foreign key to MediaAsset, just a raw
+// URL string — see prisma/schema.prisma) picks up the new image
+// automatically, with no need to find-and-replace references anywhere.
+// `invalidate: true` busts Cloudinary's own CDN cache for that public_id
+// so the replacement is visible immediately instead of after its TTL.
+export async function replaceMediaAsset(publicId: string, dataUrl: string): Promise<UploadedMedia> {
+  if (!isUploadConfigured()) {
+    throw new Error(
+      "Image upload isn't configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET in .env.local."
+    );
+  }
+  ensureConfigured();
+  const result = await cloudinary.uploader.upload(dataUrl, {
+    public_id: publicId,
+    overwrite: true,
+    invalidate: true,
     resource_type: "image",
   });
   return {

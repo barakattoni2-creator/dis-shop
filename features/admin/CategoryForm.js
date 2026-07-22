@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import styles from "@/styles/Admin.module.css";
+import MediaPicker from "@/features/admin/MediaPicker";
 
 function slugify(s) {
   return String(s || "")
@@ -70,6 +71,7 @@ export default function CategoryForm({ initial, categories, onSubmit, onCancel, 
   const [slugTouched, setSlugTouched] = useState(Boolean(initial));
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [showPicker, setShowPicker] = useState(false);
 
   const excludedParentIds = useMemo(
     () => (initial ? collectDescendantIds(categories, initial.id) : new Set()),
@@ -219,11 +221,29 @@ export default function CategoryForm({ initial, categories, onSubmit, onCancel, 
         Category Image
         <input type="file" accept="image/*" className={styles.input} onChange={handleImageChange} />
       </label>
+      <button
+        type="button"
+        className={styles.cancelBtn}
+        style={{ alignSelf: "flex-start" }}
+        onClick={() => setShowPicker(true)}
+      >
+        Choose from Library
+      </button>
       {uploading && <p className={styles.uploadStatus}>Uploading…</p>}
       {uploadError && <p className={styles.uploadError}>{uploadError}</p>}
       {form.imageUrl && !uploading && (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={form.imageUrl} alt="Category preview" className={styles.imagePreview} />
+      )}
+      {showPicker && (
+        <MediaPicker
+          defaultFolder="Categories"
+          onClose={() => setShowPicker(false)}
+          onChoose={(asset) => {
+            setForm((prev) => ({ ...prev, imageUrl: asset.url }));
+            setShowPicker(false);
+          }}
+        />
       )}
 
       <div className={styles.formRow}>

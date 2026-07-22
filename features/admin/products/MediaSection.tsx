@@ -321,6 +321,7 @@ export default function MediaSection({ form, setForm }: MediaSectionProps) {
 
       {pickerOpen && (
         <MediaPicker
+          defaultFolder="Products"
           onClose={() => setPickerOpen(null)}
           onChoose={(asset: PlainMediaAsset) => {
             if (pickerOpen === "gallery") setImages([...images, asset.url]);

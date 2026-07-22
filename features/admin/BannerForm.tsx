@@ -267,6 +267,7 @@ export default function BannerForm({ initial, onSubmit, onCancel }: BannerFormPr
 
       {pickerTarget && (
         <MediaPicker
+          defaultFolder="Banners"
           onClose={() => setPickerTarget(null)}
           onChoose={(asset: PlainMediaAsset) => {
             setForm((prev) => ({ ...prev, [pickerTarget]: asset.url }));

@@ -4,6 +4,7 @@ import type { GetServerSideProps } from "next";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import AdminLayout from "@/features/admin/AdminLayout";
+import MediaPicker from "@/features/admin/MediaPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,6 +50,7 @@ export default function AdminBrandsPage({ email, role, dbConfigured }: AdminBran
   const [logoUrl, setLogoUrl] = useState("");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
 
   const reload = () => {
     fetch("/api/admin/brands")
@@ -240,6 +242,9 @@ export default function AdminBrandsPage({ email, role, dbConfigured }: AdminBran
                     />
                   </label>
                 </Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => setShowPicker(true)}>
+                  Choose from Library
+                </Button>
               </div>
               <Input
                 value={logoUrl}
@@ -275,6 +280,17 @@ export default function AdminBrandsPage({ email, role, dbConfigured }: AdminBran
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {showPicker && (
+        <MediaPicker
+          defaultFolder="Logos"
+          onClose={() => setShowPicker(false)}
+          onChoose={(asset) => {
+            setLogoUrl(asset.url);
+            setShowPicker(false);
+          }}
+        />
+      )}
     </AdminLayout>
   );
 }

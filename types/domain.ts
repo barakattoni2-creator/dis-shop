@@ -162,11 +162,13 @@ export interface PlainMediaAsset {
   url: string;
   publicId: string;
   filename: string;
+  folder: string;
   width: number | null;
   height: number | null;
   bytes: number | null;
   format: string | null;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface PlainAdminUser {

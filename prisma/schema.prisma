@@ -396,14 +396,21 @@ model MediaAsset {
   url       String
   publicId  String
   filename  String
+  // Free-text, not an enum — the admin UI offers a fixed set (Products,
+  // Categories, Brands, Banners, Logos, General) but an enum would force a
+  // migration every time that set changes; validated in the API layer
+  // instead (services/db/media.ts's MEDIA_FOLDERS).
+  folder    String   @default("General")
   width     Int?
   height    Int?
   bytes     Int?
   format    String?
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([createdAt])
   @@index([filename])
+  @@index([folder])
 }
 
 // ---- AI System (Admin → AI, suggest_only by default — see AGENTS.md-level

@@ -15,9 +15,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!session) return;
 
   if (req.method === "GET") {
-    const { q = "", page = "1", pageSize = "24" } = req.query;
+    const { q = "", folder = "", page = "1", pageSize = "24" } = req.query;
     const data = await fetchMediaForAdmin({
       q: String(q),
+      folder: String(folder),
       page: Math.max(1, Number(page) || 1),
       pageSize: Math.min(100, Math.max(1, Number(pageSize) || 24)),
     });
@@ -28,14 +29,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!isDbConfigured()) {
       return res.status(503).json({ error: "No database connected." });
     }
-    const { image, filename } = req.body || {};
+    const { image, filename, folder } = req.body || {};
     if (!image) return res.status(400).json({ error: "No image provided." });
     try {
-      const uploaded = await uploadMediaAsset(image);
+      const uploaded = await uploadMediaAsset(image, folder);
       const asset = await createMediaAsset({
         url: uploaded.url,
         publicId: uploaded.publicId,
         filename: filename || uploaded.publicId.split("/").pop() || "untitled",
+        folder,
         width: uploaded.width,
         height: uploaded.height,
         bytes: uploaded.bytes,

@@ -100,6 +100,7 @@ export default function SeoSection({ form, setForm }: SeoSectionProps) {
 
       {pickerOpen && (
         <MediaPicker
+          defaultFolder="Products"
           onClose={() => setPickerOpen(false)}
           onChoose={(asset: PlainMediaAsset) => {
             setForm((prev) => ({ ...prev, ogImage: asset.url }));
