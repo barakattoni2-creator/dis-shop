@@ -56,7 +56,7 @@ export default function Categories({ products = [], categories = [] }) {
                     src={image}
                     alt={cat.name}
                     fill
-                    sizes="(max-width: 640px) 40vw, 200px"
+                    sizes="(max-width: 640px) 90vw, (max-width: 900px) 45vw, (max-width: 1300px) 30vw, 320px"
                     className={styles.catImage}
                   />
                 ) : Illustration ? (
@@ -71,7 +71,8 @@ export default function Categories({ products = [], categories = [] }) {
                   {cat.productCount} product{cat.productCount !== 1 ? "s" : ""}
                 </span>
               )}
-              <span className={styles.arrow}>
+              <span className={styles.viewBtn}>
+                View Category
                 <ChevronRightIcon width="14" height="14" />
               </span>
             </Link>

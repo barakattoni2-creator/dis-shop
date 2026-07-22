@@ -38,11 +38,14 @@
   color: var(--dis-orange-dark);
 }
 
+/* 4 columns down to 1300px, then 3 / 2 / 1 at the same breakpoints the
+   rest of this file already uses (1300 / 900 / 640) — fewer, larger tiles
+   per row than before, which is the point ("Large category cards"). */
 .grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   align-items: stretch;
-  gap: 1.1rem;
+  gap: 1.25rem;
 }
 
 .card {
@@ -51,11 +54,11 @@
   flex-direction: column;
   align-items: center;
   height: 100%;
-  gap: 0.45rem;
+  gap: 0.5rem;
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 1.3rem 1.1rem 1.4rem;
+  border-radius: 22px;
+  padding: 1.5rem 1.25rem 1.6rem;
   text-align: center;
   box-shadow: 0 6px 18px rgba(8, 26, 58, 0.07);
   overflow: hidden;
@@ -77,8 +80,8 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 180px;
-  border-radius: 16px;
+  height: 208px;
+  border-radius: 18px;
   overflow: hidden;
   margin-bottom: 0.3rem;
 }
@@ -121,26 +124,41 @@
 
 .count {
   font-size: 0.72rem;
-  color: #7a8699;
+  color: #5f6b7a;
 }
 
-.arrow {
-  display: flex;
+.viewBtn {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 0.3rem;
+  padding: 0.45rem 1rem;
+  border: 1.5px solid var(--dis-blue);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
   color: var(--dis-blue);
-  opacity: 0.55;
-  transition: transform 0.25s ease, opacity 0.25s ease;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.card:hover .arrow {
+.viewBtn svg {
+  transition: transform 0.25s ease;
+}
+
+.card:hover .viewBtn {
+  background: var(--dis-blue);
+  color: #fff;
+  border-color: var(--dis-blue);
+}
+
+.card:hover .viewBtn svg {
   transform: translateX(3px);
-  opacity: 1;
 }
 
 @media (max-width: 1300px) {
   .grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -160,25 +178,20 @@
   }
 
   .grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.7rem;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 0.9rem;
   }
 
   .card {
-    padding: 0.8rem 0.7rem 1rem;
+    padding: 0.9rem 0.9rem 1.1rem;
   }
 
   .imageStage {
-    height: 140px;
-    border-radius: 12px;
-  }
-
-  .icon {
-    font-size: 1.8rem;
+    height: 170px;
   }
 
   .name {
-    font-size: 0.88rem;
+    font-size: 1rem;
   }
 
   .count {
