@@ -21,17 +21,30 @@ import { HOMEPAGE_SECTIONS_SETTING_KEY, parseHomepageSectionState } from "@/data
 import { calcDiscount } from "@/utils/format";
 import styles from "@/styles/Home.module.css";
 
+// Logs and swallows, rather than swallowing silently — a real query failure
+// here (a stale Prisma client after a schema migration, a transient Neon
+// blip, etc.) used to be indistinguishable from "no banners/products/
+// categories exist yet", which made the homepage silently fall back to its
+// empty state with zero trace in the logs. The fallback behavior (empty
+// array/object, page still renders) is unchanged; only the visibility is new.
+function logAndFallback(label, fallback) {
+  return (err) => {
+    console.error(`[pages/index.js getStaticProps] ${label} failed:`, err);
+    return fallback;
+  };
+}
+
 export async function getStaticProps() {
   // Neon's free tier can take a few seconds to wake from auto-suspend; a
   // transient P1001 here must not crash the homepage or fall back to a
   // stale/wrong layout. Empty arrays degrade gracefully — every section
   // below already has its own empty state — and the next revalidate retries.
   const [products, banners, categories, brands, settings] = await Promise.all([
-    fetchProducts().catch(() => []),
-    fetchBanners().catch(() => []),
-    fetchHomepageCategoryList().catch(() => []),
-    fetchBrands().catch(() => []),
-    fetchSettings().catch(() => ({})),
+    fetchProducts().catch(logAndFallback("fetchProducts", [])),
+    fetchBanners().catch(logAndFallback("fetchBanners", [])),
+    fetchHomepageCategoryList().catch(logAndFallback("fetchHomepageCategoryList", [])),
+    fetchBrands().catch(logAndFallback("fetchBrands", [])),
+    fetchSettings().catch(logAndFallback("fetchSettings", {})),
   ]);
   const sectionState = parseHomepageSectionState(settings[HOMEPAGE_SECTIONS_SETTING_KEY]);
   return { props: { products, banners, categories, brands, sectionState }, revalidate: 60 };
