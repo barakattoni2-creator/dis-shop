@@ -1,12 +1,14 @@
 import { useState } from "react";
 import type { GetServerSideProps } from "next";
-import { Search, UploadCloud, Loader2 } from "lucide-react";
+import { Search, UploadCloud, Loader2, LayoutGrid, List as ListIcon } from "lucide-react";
 import AdminLayout from "@/features/admin/AdminLayout";
 import MediaGrid from "@/features/admin/MediaGrid";
+import MediaList from "@/features/admin/MediaList";
 import MediaPreviewDialog from "@/features/admin/MediaPreviewDialog";
 import { useMediaLibrary } from "@/features/admin/useMediaLibrary";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { requireAdminPage, type AnyRes } from "@/lib/adminAuth";
 import { PERMISSIONS } from "@/data/adminRoles";
 import { isDbConfigured } from "@/lib/db";
@@ -42,6 +44,7 @@ export default function AdminMediaPage({ email, role, dbConfigured }: AdminMedia
     loading,
     error,
     uploading,
+    uploadProgress,
     upload,
     rename,
     move,
@@ -50,15 +53,20 @@ export default function AdminMediaPage({ email, role, dbConfigured }: AdminMedia
   } = useMediaLibrary(dbConfigured);
   const [dragOver, setDragOver] = useState(false);
   const [preview, setPreview] = useState<PlainMediaAsset | null>(null);
+  const [view, setView] = useState<"grid" | "list">("grid");
+  const [uploadQueue, setUploadQueue] = useState<{ current: number; total: number; name: string } | null>(null);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const totalAll = Object.values(folderCounts).reduce((a, b) => a + b, 0);
 
   const handleFiles = async (files: FileList | File[] | null) => {
     if (!files || files.length === 0) return;
-    for (const file of Array.from(files)) {
-      await upload(file);
+    const list = Array.from(files);
+    for (let i = 0; i < list.length; i++) {
+      setUploadQueue({ current: i + 1, total: list.length, name: list[i].name });
+      await upload(list[i]);
     }
+    setUploadQueue(null);
   };
 
   return (
@@ -73,42 +81,44 @@ export default function AdminMediaPage({ email, role, dbConfigured }: AdminMedia
         {error && <p className="mb-4 text-sm font-medium text-destructive">{error}</p>}
 
         <div className="grid gap-6 lg:grid-cols-[200px_1fr]">
-          <aside className="space-y-1">
+          <aside className="lg:space-y-1">
             <p className="mb-2 px-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
               Folders
             </p>
-            <button
-              type="button"
-              onClick={() => {
-                setPage(1);
-                setFolder("");
-              }}
-              className={`flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm ${
-                folder === "" ? "bg-primary text-primary-foreground" : "hover:bg-accent"
-              }`}
-            >
-              All Images <span className="text-xs opacity-70">{totalAll}</span>
-            </button>
-            {folders.map((f) => (
+            <div className="flex gap-1.5 overflow-x-auto pb-1 lg:block lg:space-y-1 lg:overflow-visible lg:pb-0">
               <button
-                key={f}
                 type="button"
                 onClick={() => {
                   setPage(1);
-                  setFolder(f);
+                  setFolder("");
                 }}
-                className={`flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm ${
-                  folder === f ? "bg-primary text-primary-foreground" : "hover:bg-accent"
+                className={`flex shrink-0 items-center justify-between gap-1.5 rounded-md px-2.5 py-1.5 text-left text-sm whitespace-nowrap lg:w-full lg:shrink lg:whitespace-normal ${
+                  folder === "" ? "bg-primary text-primary-foreground" : "hover:bg-accent"
                 }`}
               >
-                {f} <span className="text-xs opacity-70">{folderCounts[f] || 0}</span>
+                All Images <span className="text-xs opacity-70">{totalAll}</span>
               </button>
-            ))}
+              {folders.map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => {
+                    setPage(1);
+                    setFolder(f);
+                  }}
+                  className={`flex shrink-0 items-center justify-between gap-1.5 rounded-md px-2.5 py-1.5 text-left text-sm whitespace-nowrap lg:w-full lg:shrink lg:whitespace-normal ${
+                    folder === f ? "bg-primary text-primary-foreground" : "hover:bg-accent"
+                  }`}
+                >
+                  {f} <span className="text-xs opacity-70">{folderCounts[f] || 0}</span>
+                </button>
+              ))}
+            </div>
           </aside>
 
           <div className="min-w-0">
             <div className="mb-4 flex flex-wrap items-center gap-2">
-              <div className="relative max-w-xs flex-1">
+              <div className="relative min-w-[160px] max-w-xs flex-1">
                 <Search className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   value={q}
@@ -121,6 +131,32 @@ export default function AdminMediaPage({ email, role, dbConfigured }: AdminMedia
                   disabled={!dbConfigured}
                 />
               </div>
+
+              <div className="flex overflow-hidden rounded-md border">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Grid view"
+                  aria-pressed={view === "grid"}
+                  className={`rounded-none ${view === "grid" ? "bg-accent" : ""}`}
+                  onClick={() => setView("grid")}
+                >
+                  <LayoutGrid className="size-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label="List view"
+                  aria-pressed={view === "list"}
+                  className={`rounded-none border-l ${view === "list" ? "bg-accent" : ""}`}
+                  onClick={() => setView("list")}
+                >
+                  <ListIcon className="size-4" />
+                </Button>
+              </div>
+
               <Button variant="outline" size="sm" asChild disabled={!dbConfigured || uploading}>
                 <label className="cursor-pointer">
                   {uploading ? <Loader2 className="size-4 animate-spin" /> : <UploadCloud className="size-4" />}
@@ -139,6 +175,18 @@ export default function AdminMediaPage({ email, role, dbConfigured }: AdminMedia
                 </label>
               </Button>
             </div>
+
+            {uploadQueue && (
+              <div className="mb-4 rounded-lg border bg-card p-3">
+                <div className="mb-1.5 flex items-center justify-between text-xs text-muted-foreground">
+                  <span className="truncate">
+                    Uploading {uploadQueue.name} ({uploadQueue.current} of {uploadQueue.total})
+                  </span>
+                  <span>{uploadProgress}%</span>
+                </div>
+                <Progress value={uploadProgress} />
+              </div>
+            )}
 
             <div
               className={`mb-4 rounded-lg border-2 border-dashed p-6 text-center text-sm text-muted-foreground transition-colors ${
@@ -162,8 +210,10 @@ export default function AdminMediaPage({ email, role, dbConfigured }: AdminMedia
             <div className="rounded-lg border bg-card p-3">
               {loading ? (
                 <p className="p-8 text-center text-sm text-muted-foreground">Loading…</p>
-              ) : (
+              ) : view === "grid" ? (
                 <MediaGrid assets={assets} onPreview={setPreview} onDelete={remove} />
+              ) : (
+                <MediaList assets={assets} onPreview={setPreview} onDelete={remove} />
               )}
             </div>
 

@@ -19,6 +19,7 @@ export function useMediaLibrary(dbConfigured: boolean, defaultFolder = "") {
   const [loading, setLoading] = useState(dbConfigured);
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const reload = () => {
     if (!dbConfigured) return;
@@ -62,27 +63,53 @@ export function useMediaLibrary(dbConfigured: boolean, defaultFolder = "") {
       reader.readAsDataURL(file);
     });
 
+  // XMLHttpRequest rather than fetch — fetch has no upload-progress event,
+  // and these payloads (base64 data URLs) are large enough that a real
+  // percentage is worth showing instead of just a spinner.
+  const postWithProgress = (url: string, body: string): Promise<PlainMediaAsset> =>
+    new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", url);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) setUploadProgress(Math.round((e.loaded / e.total) * 100));
+      };
+      xhr.onload = () => {
+        let data: { asset?: PlainMediaAsset; error?: string } = {};
+        try {
+          data = JSON.parse(xhr.responseText);
+        } catch {
+          // fall through to status-based error below
+        }
+        if (xhr.status >= 200 && xhr.status < 300 && data.asset) resolve(data.asset);
+        else reject(new Error(data.error || "Upload failed."));
+      };
+      xhr.onerror = () => reject(new Error("Upload failed."));
+      xhr.send(body);
+    });
+
   const upload = async (file: File, uploadFolder?: string): Promise<PlainMediaAsset | null> => {
     setError("");
     setUploading(true);
+    setUploadProgress(0);
     try {
       const dataUrl = await readAsDataUrl(file);
-      const res = await fetch("/api/admin/media", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: dataUrl, filename: file.name, folder: uploadFolder || folder || "General" }),
+      const body = JSON.stringify({
+        image: dataUrl,
+        filename: file.name,
+        folder: uploadFolder || folder || "General",
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload failed.");
+      const asset = await postWithProgress("/api/admin/media", body);
       setPage(1);
       reload();
       reloadFolderCounts();
-      return data.asset as PlainMediaAsset;
+      return asset;
     } catch (err) {
       setError((err as Error).message);
       return null;
     } finally {
       setUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -126,22 +153,21 @@ export function useMediaLibrary(dbConfigured: boolean, defaultFolder = "") {
   const replace = async (asset: PlainMediaAsset, file: File): Promise<PlainMediaAsset | null> => {
     setError("");
     setUploading(true);
+    setUploadProgress(0);
     try {
       const dataUrl = await readAsDataUrl(file);
-      const res = await fetch(`/api/admin/media/${asset.id}/replace`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: dataUrl }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Replace failed.");
+      const updated = await postWithProgress(
+        `/api/admin/media/${asset.id}/replace`,
+        JSON.stringify({ image: dataUrl })
+      );
       reload();
-      return data.asset as PlainMediaAsset;
+      return updated;
     } catch (err) {
       setError((err as Error).message);
       return null;
     } finally {
       setUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -167,6 +193,7 @@ export function useMediaLibrary(dbConfigured: boolean, defaultFolder = "") {
     loading,
     error,
     uploading,
+    uploadProgress,
     upload,
     rename,
     move,
