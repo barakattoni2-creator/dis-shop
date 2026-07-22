@@ -1,6 +1,9 @@
 import { useState } from "react";
-import adminStyles from "@/styles/Admin.module.css";
-import styles from "@/styles/BannerTable.module.css";
+import NextImage from "next/image";
+import { GripVertical, Eye, Pencil, Trash2, Power, PowerOff } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import BannerPreview from "@/features/admin/BannerPreview";
 import type { PlainBanner } from "@/types/domain";
 
@@ -12,16 +15,13 @@ interface DragState {
   overZone: DropZone;
 }
 
-function computeStatus(b: PlainBanner): { label: string; className: string } {
-  if (!b.active) return { label: "Hidden", className: styles.statusHidden };
+function computeStatus(b: PlainBanner): { label: string; variant: "success" | "warning" | "secondary" | "outline" } {
+  if (b.status === "DRAFT") return { label: "Draft", variant: "secondary" };
+  if (!b.active) return { label: "Disabled", variant: "secondary" };
   const now = Date.now();
-  if (b.startDate && new Date(b.startDate).getTime() > now) {
-    return { label: "Scheduled", className: styles.statusScheduled };
-  }
-  if (b.endDate && new Date(b.endDate).getTime() < now) {
-    return { label: "Expired", className: styles.statusExpired };
-  }
-  return { label: "Live", className: styles.statusLive };
+  if (b.startDate && new Date(b.startDate).getTime() > now) return { label: "Scheduled", variant: "warning" };
+  if (b.endDate && new Date(b.endDate).getTime() < now) return { label: "Expired", variant: "outline" };
+  return { label: "Live", variant: "success" };
 }
 
 function formatDateRange(b: PlainBanner): string {
@@ -58,9 +58,10 @@ function BannerRow({
   const status = computeStatus(banner);
 
   const rowClass = [
-    isDragging ? styles.rowDragging : "",
-    dropZone === "above" ? styles.rowDragOverAbove : "",
-    dropZone === "below" ? styles.rowDragOverBelow : "",
+    "transition-colors",
+    isDragging ? "opacity-40" : "",
+    dropZone === "above" ? "border-t-2 border-t-primary" : "",
+    dropZone === "below" ? "border-b-2 border-b-primary" : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -91,7 +92,7 @@ function BannerRow({
   };
 
   return (
-    <tr
+    <TableRow
       className={rowClass}
       draggable
       onDragStart={handleDragStart}
@@ -100,55 +101,67 @@ function BannerRow({
       onDrop={handleDrop}
       onDragEnd={() => setDragState({ draggingId: null, overId: null, overZone: null })}
     >
-      <td className={styles.dragCell} title="Drag to reorder" aria-label="Drag to reorder">
-        <span className={styles.dragHandle}>⠿</span>
-      </td>
-      <td data-label="Image">
-        <div className={styles.thumbPair}>
+      <TableCell className="w-8">
+        <span className="cursor-grab text-muted-foreground active:cursor-grabbing" title="Drag to reorder" aria-label="Drag to reorder">
+          <GripVertical className="size-4" />
+        </span>
+      </TableCell>
+      <TableCell>
+        <div className="flex gap-1.5">
           {banner.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={banner.imageUrl} alt={banner.title} className={adminStyles.rowThumb} title="Desktop" />
+            <div className="relative size-11 overflow-hidden rounded-md border bg-muted" title="Desktop">
+              <NextImage src={banner.imageUrl} alt={banner.title} fill sizes="44px" className="object-cover" />
+            </div>
           ) : (
-            <span className={adminStyles.rowThumbEmpty}>🖼️</span>
+            <div className="flex size-11 items-center justify-center rounded-md border bg-muted text-muted-foreground">🖼️</div>
           )}
           {banner.mobileImageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={banner.mobileImageUrl}
-              alt={`${banner.title} (mobile)`}
-              className={adminStyles.rowThumb}
-              title="Mobile"
-            />
+            <div className="relative size-11 overflow-hidden rounded-md border bg-muted" title="Mobile">
+              <NextImage src={banner.mobileImageUrl} alt={`${banner.title} (mobile)`} fill sizes="44px" className="object-cover" />
+            </div>
           )}
         </div>
-      </td>
-      <td data-label="Title">{banner.title}</td>
-      <td data-label="Schedule" className={styles.scheduleCell}>
-        {formatDateRange(banner)}
-      </td>
-      <td data-label="Status">
-        <span className={`${styles.statusBadge} ${status.className}`}>{status.label}</span>
-      </td>
-      <td className={adminStyles.actionsCell}>
-        <button
-          type="button"
-          className={adminStyles.editBtn}
-          onClick={() => onPreview(banner)}
-          disabled={!banner.imageUrl}
-        >
-          Preview
-        </button>
-        <button type="button" className={adminStyles.editBtn} onClick={() => onToggleActive(banner)}>
-          {banner.active ? "Disable" : "Enable"}
-        </button>
-        <button type="button" className={adminStyles.editBtn} onClick={() => onEdit(banner)}>
-          Edit
-        </button>
-        <button type="button" className={adminStyles.deleteBtn} onClick={() => onDelete(banner)}>
-          Delete
-        </button>
-      </td>
-    </tr>
+      </TableCell>
+      <TableCell className="max-w-[220px] truncate font-medium">{banner.title}</TableCell>
+      <TableCell className="text-center text-muted-foreground">{banner.order}</TableCell>
+      <TableCell className="hidden text-muted-foreground md:table-cell">{formatDateRange(banner)}</TableCell>
+      <TableCell>
+        <Badge variant={status.variant}>{status.label}</Badge>
+      </TableCell>
+      <TableCell>
+        <div className="flex justify-end gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={`Preview ${banner.title}`}
+            disabled={!banner.imageUrl}
+            onClick={() => onPreview(banner)}
+          >
+            <Eye className="size-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={banner.active ? `Disable ${banner.title}` : `Enable ${banner.title}`}
+            onClick={() => onToggleActive(banner)}
+          >
+            {banner.active ? <PowerOff className="size-4" /> : <Power className="size-4" />}
+          </Button>
+          <Button variant="ghost" size="icon" aria-label={`Edit ${banner.title}`} onClick={() => onEdit(banner)}>
+            <Pencil className="size-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-destructive"
+            aria-label={`Delete ${banner.title}`}
+            onClick={() => onDelete(banner)}
+          >
+            <Trash2 className="size-4" />
+          </Button>
+        </div>
+      </TableCell>
+    </TableRow>
   );
 }
 
@@ -165,7 +178,7 @@ export default function BannerTable({ banners, onEdit, onDelete, onToggleActive,
   const [previewBanner, setPreviewBanner] = useState<PlainBanner | null>(null);
 
   if (banners.length === 0) {
-    return <p className={adminStyles.empty}>No banners yet. The homepage will show its default slides.</p>;
+    return <p className="p-8 text-center text-sm text-muted-foreground">No banners yet. The homepage will show its default slides.</p>;
   }
 
   const sorted = [...banners].sort((a, b) => a.order - b.order);
@@ -180,19 +193,20 @@ export default function BannerTable({ banners, onEdit, onDelete, onToggleActive,
   };
 
   return (
-    <div className={adminStyles.tableWrap}>
-      <table className={adminStyles.table}>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Image</th>
-            <th>Title</th>
-            <th>Schedule</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
+    <div className="overflow-x-auto rounded-lg border bg-card">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-8" />
+            <TableHead>Image</TableHead>
+            <TableHead>Title</TableHead>
+            <TableHead className="text-center">Priority</TableHead>
+            <TableHead className="hidden md:table-cell">Schedule</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="w-36" />
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {sorted.map((b) => (
             <BannerRow
               key={b.id}
@@ -206,8 +220,8 @@ export default function BannerTable({ banners, onEdit, onDelete, onToggleActive,
               onReorder={handleReorder}
             />
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
 
       {previewBanner && (
         <BannerPreview
@@ -218,6 +232,8 @@ export default function BannerTable({ banners, onEdit, onDelete, onToggleActive,
             ctaLabel: previewBanner.ctaLabel || "",
             imageUrl: previewBanner.imageUrl || "",
             mobileImageUrl: previewBanner.mobileImageUrl || "",
+            overlayOpacity: previewBanner.overlayOpacity,
+            textAlign: previewBanner.textAlign,
           }}
           onClose={() => setPreviewBanner(null)}
         />

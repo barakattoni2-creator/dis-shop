@@ -1,14 +1,26 @@
 import { useEffect, useState } from "react";
 import type { GetServerSideProps } from "next";
+import { toast } from "sonner";
+import { Plus } from "lucide-react";
 import AdminLayout from "@/features/admin/AdminLayout";
 import BannerTable from "@/features/admin/BannerTable";
 import BannerForm, { type BannerFormValues } from "@/features/admin/BannerForm";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { requireAdminPage, type AnyRes } from "@/lib/adminAuth";
 import { PERMISSIONS } from "@/data/adminRoles";
 import { isDbConfigured } from "@/lib/db";
-import type { AdminRole } from "@/types/domain";
-import type { PlainBanner } from "@/types/domain";
-import styles from "@/styles/Admin.module.css";
+import type { AdminRole, PlainBanner } from "@/types/domain";
 
 interface AdminBannersPageProps {
   email: string;
@@ -33,7 +45,8 @@ export default function AdminBannersPage({ email, role, dbConfigured }: AdminBan
   const [loading, setLoading] = useState(dbConfigured);
   const [editing, setEditing] = useState<PlainBanner | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [error, setError] = useState("");
+  const [deleting, setDeleting] = useState<PlainBanner | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const reload = () => {
     fetch("/api/admin/banners")
@@ -48,10 +61,16 @@ export default function AdminBannersPage({ email, role, dbConfigured }: AdminBan
     if (dbConfigured) reload();
   }, [dbConfigured]);
 
-  const handleDelete = async (banner: PlainBanner) => {
-    if (!window.confirm(`Delete "${banner.title}"?`)) return;
-    await fetch(`/api/admin/banners/${banner.id}`, { method: "DELETE" });
-    reload();
+  const handleDelete = async () => {
+    if (!deleting) return;
+    try {
+      await fetch(`/api/admin/banners/${deleting.id}`, { method: "DELETE" });
+      toast.success(`Deleted "${deleting.title}".`);
+      setDeleting(null);
+      reload();
+    } catch (err) {
+      toast.error((err as Error).message);
+    }
   };
 
   const handleToggleActive = async (banner: PlainBanner) => {
@@ -61,11 +80,11 @@ export default function AdminBannersPage({ email, role, dbConfigured }: AdminBan
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ active: !banner.active }),
     });
+    toast.success(banner.active ? "Banner disabled." : "Banner enabled.");
     reload();
   };
 
   const handleReorder = async (orderedIds: string[]) => {
-    setError("");
     // Optimistic — apply the new order locally so rows don't snap back
     // while the request is in flight.
     setBanners((prev) => {
@@ -79,13 +98,13 @@ export default function AdminBannersPage({ email, role, dbConfigured }: AdminBan
     });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      setError(data.error || "Reorder failed.");
+      toast.error(data.error || "Reorder failed.");
     }
     reload();
   };
 
   const handleSubmit = async (data: BannerFormValues) => {
-    setError("");
+    setSaving(true);
     try {
       const res = editing
         ? await fetch(`/api/admin/banners/${editing.id}`, {
@@ -100,42 +119,43 @@ export default function AdminBannersPage({ email, role, dbConfigured }: AdminBan
           });
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || "Save failed.");
+      toast.success(editing ? "Banner updated." : "Banner added.");
       setShowForm(false);
       setEditing(null);
       reload();
     } catch (err) {
-      setError((err as Error).message);
+      toast.error((err as Error).message);
+    } finally {
+      setSaving(false);
     }
   };
 
   return (
     <AdminLayout title="Homepage Banners" email={email} role={role}>
-      <div className={styles.main}>
-        <div className={styles.headerRow}>
-          <div />
-          <button
-            className={styles.addBtn}
+      <div className="shadcn-root">
+        <div className="mb-4 flex items-center justify-between">
+          <h1 className="text-xl font-bold">Banner Manager</h1>
+          <Button
+            size="sm"
             onClick={() => {
               setEditing(null);
               setShowForm(true);
             }}
             disabled={!dbConfigured}
           >
-            + Add Banner
-          </button>
+            <Plus className="size-4" /> Add Banner
+          </Button>
         </div>
 
         {!dbConfigured && (
-          <p className={styles.note}>
-            No database connected yet. Set <code>DATABASE_URL</code> in{" "}
-            <code>.env.local</code> to manage homepage banners. The homepage
-            will keep showing its default slides until then.
+          <p className="mb-4 rounded-md border bg-muted/40 p-3 text-sm text-muted-foreground">
+            No database connected yet. Set <code>DATABASE_URL</code> in <code>.env.local</code> to manage
+            homepage banners. The homepage will keep showing its default slides until then.
           </p>
         )}
-        {error && <p className={styles.uploadError}>{error}</p>}
 
         {loading ? (
-          <p className={styles.empty}>Loading…</p>
+          <p className="p-8 text-center text-sm text-muted-foreground">Loading…</p>
         ) : (
           <BannerTable
             banners={banners}
@@ -143,21 +163,43 @@ export default function AdminBannersPage({ email, role, dbConfigured }: AdminBan
               setEditing(b);
               setShowForm(true);
             }}
-            onDelete={handleDelete}
+            onDelete={setDeleting}
             onToggleActive={handleToggleActive}
             onReorder={handleReorder}
           />
         )}
-
-        {showForm && (
-          <div className={styles.modalOverlay} onClick={() => setShowForm(false)}>
-            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-              <h2 className={styles.modalHeading}>{editing ? "Edit Banner" : "Add Banner"}</h2>
-              <BannerForm initial={editing} onSubmit={handleSubmit} onCancel={() => setShowForm(false)} />
-            </div>
-          </div>
-        )}
       </div>
+
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{editing ? "Edit Banner" : "Add Banner"}</DialogTitle>
+          </DialogHeader>
+          <BannerForm
+            initial={editing}
+            saving={saving}
+            onSubmit={handleSubmit}
+            onCancel={() => setShowForm(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={Boolean(deleting)} onOpenChange={(open) => !open && setDeleting(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this banner?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Delete &ldquo;{deleting?.title}&rdquo;? This can&rsquo;t be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AdminLayout>
   );
 }

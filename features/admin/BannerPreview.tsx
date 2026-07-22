@@ -1,6 +1,9 @@
 import { useState } from "react";
 import Image from "next/image";
-import adminStyles from "@/styles/Admin.module.css";
+import { Monitor, Smartphone } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { buildBannerOverlayGradient } from "@/lib/bannerOverlay";
 import heroStyles from "@/styles/HeroBanner.module.css";
 import styles from "@/styles/BannerPreview.module.css";
 
@@ -11,6 +14,8 @@ export interface BannerPreviewData {
   ctaLabel: string;
   imageUrl: string;
   mobileImageUrl: string;
+  overlayOpacity?: number;
+  textAlign?: "left" | "center" | "right";
 }
 
 interface BannerPreviewProps {
@@ -28,30 +33,29 @@ export default function BannerPreview({ banner, onClose }: BannerPreviewProps) {
   const image = device === "mobile" ? banner.mobileImageUrl || banner.imageUrl : banner.imageUrl;
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.header}>
-          <h2 className={adminStyles.modalHeading}>Banner Preview</h2>
-          <button type="button" className={adminStyles.cancelBtn} onClick={onClose}>
-            Close
-          </button>
-        </div>
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>Banner Preview</DialogTitle>
+        </DialogHeader>
 
-        <div className={styles.deviceToggle}>
-          <button
+        <div className="flex gap-2">
+          <Button
             type="button"
-            className={`${styles.deviceBtn} ${device === "desktop" ? styles.deviceBtnActive : ""}`}
+            variant={device === "desktop" ? "default" : "outline"}
+            size="sm"
             onClick={() => setDevice("desktop")}
           >
-            🖥️ Desktop
-          </button>
-          <button
+            <Monitor className="size-4" /> Desktop
+          </Button>
+          <Button
             type="button"
-            className={`${styles.deviceBtn} ${device === "mobile" ? styles.deviceBtnActive : ""}`}
+            variant={device === "mobile" ? "default" : "outline"}
+            size="sm"
             onClick={() => setDevice("mobile")}
           >
-            📱 Mobile
-          </button>
+            <Smartphone className="size-4" /> Mobile
+          </Button>
         </div>
 
         <div className={`${styles.frame} ${device === "mobile" ? styles.frameMobile : styles.frameDesktop}`}>
@@ -60,8 +64,11 @@ export default function BannerPreview({ banner, onClose }: BannerPreviewProps) {
               <div className={heroStyles.bannerSlideImage}>
                 <Image src={image} alt={banner.title || "Banner preview"} fill sizes="900px" className={heroStyles.bannerImage} />
               </div>
-              <div className={heroStyles.bannerOverlay} />
-              <div className={heroStyles.bannerContentWrap}>
+              <div
+                className={heroStyles.bannerOverlay}
+                style={{ background: buildBannerOverlayGradient(banner.overlayOpacity ?? 100) }}
+              />
+              <div className={heroStyles.bannerContentWrap} data-align={banner.textAlign || "left"}>
                 <div className={heroStyles.bannerContent}>
                   {banner.eyebrow && <span className={heroStyles.eyebrow}>{banner.eyebrow}</span>}
                   <h2 className={heroStyles.bannerTitle}>{banner.title || "Banner Title"}</h2>
@@ -77,7 +84,7 @@ export default function BannerPreview({ banner, onClose }: BannerPreviewProps) {
             <p className={styles.emptyNotice}>Upload a {device} image to see a preview.</p>
           )}
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

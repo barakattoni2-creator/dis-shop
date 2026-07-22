@@ -75,6 +75,10 @@
    strengthening the left side never creeps further into the image. A
    second, fully-opaque stop right at the edge guarantees the title/CTA
    text stays readable even against a bright banner photo. */
+/* Background is set inline per-slide (lib/bannerOverlay.ts) so each banner's
+   overlayOpacity control actually changes what renders; these rules are the
+   fallback for any caller that doesn't pass one (matches the old fixed
+   design at full strength). */
 .bannerOverlay {
   position: absolute;
   inset: 0;
@@ -100,6 +104,28 @@
 
 .bannerContent {
   max-width: 460px;
+}
+
+/* Opt-in alignment — unset/"left" (the default for every existing banner)
+   renders identically to before this control existed. */
+.bannerContentWrap[data-align="center"] .bannerContent {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.bannerContentWrap[data-align="center"] .ctaRow,
+.bannerContentWrap[data-align="center"] .trustRow {
+  justify-content: center;
+}
+
+.bannerContentWrap[data-align="right"] .bannerContent {
+  margin-left: auto;
+  text-align: right;
+}
+
+.bannerContentWrap[data-align="right"] .ctaRow,
+.bannerContentWrap[data-align="right"] .trustRow {
+  justify-content: flex-end;
 }
 
 .bannerTitle {

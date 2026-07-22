@@ -1,5 +1,13 @@
 import { useState } from "react";
-import styles from "@/styles/Admin.module.css";
+import NextImage from "next/image";
+import { AlignLeft, AlignCenter, AlignRight, Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DialogFooter } from "@/components/ui/dialog";
 import MediaPicker from "@/features/admin/MediaPicker";
 import BannerPreview from "@/features/admin/BannerPreview";
 import type { PlainBanner, PlainMediaAsset } from "@/types/domain";
@@ -18,6 +26,10 @@ export interface BannerFormValues {
   startDate: string;
   endDate: string;
   active: boolean;
+  status: "DRAFT" | "ACTIVE";
+  overlayOpacity: number;
+  textAlign: "left" | "center" | "right";
+  openInNewTab: boolean;
 }
 
 function emptyForm(): BannerFormValues {
@@ -35,6 +47,10 @@ function emptyForm(): BannerFormValues {
     startDate: "",
     endDate: "",
     active: true,
+    status: "ACTIVE",
+    overlayOpacity: 100,
+    textAlign: "left",
+    openInNewTab: false,
   };
 }
 
@@ -46,13 +62,20 @@ function toDateInputValue(iso: string | null | undefined): string {
   return iso ? iso.slice(0, 10) : "";
 }
 
+const TEXT_ALIGN_OPTIONS: Array<{ value: BannerFormValues["textAlign"]; label: string; Icon: typeof AlignLeft }> = [
+  { value: "left", label: "Left", Icon: AlignLeft },
+  { value: "center", label: "Center", Icon: AlignCenter },
+  { value: "right", label: "Right", Icon: AlignRight },
+];
+
 interface BannerFormProps {
   initial?: PlainBanner | null;
   onSubmit: (data: BannerFormValues) => void;
   onCancel: () => void;
+  saving?: boolean;
 }
 
-export default function BannerForm({ initial, onSubmit, onCancel }: BannerFormProps) {
+export default function BannerForm({ initial, onSubmit, onCancel, saving }: BannerFormProps) {
   const [form, setForm] = useState<BannerFormValues>(
     initial
       ? {
@@ -69,6 +92,10 @@ export default function BannerForm({ initial, onSubmit, onCancel }: BannerFormPr
           startDate: toDateInputValue(initial.startDate),
           endDate: toDateInputValue(initial.endDate),
           active: initial.active ?? true,
+          status: initial.status || "ACTIVE",
+          overlayOpacity: initial.overlayOpacity ?? 100,
+          textAlign: initial.textAlign || "left",
+          openInNewTab: initial.openInNewTab ?? false,
         }
       : emptyForm()
   );
@@ -77,12 +104,8 @@ export default function BannerForm({ initial, onSubmit, onCancel }: BannerFormPr
   const [pickerTarget, setPickerTarget] = useState<"imageUrl" | "mobileImageUrl" | null>(null);
   const [showPreview, setShowPreview] = useState(false);
 
-  const set =
-    (field: keyof BannerFormValues) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const value = e.target.type === "checkbox" ? (e.target as HTMLInputElement).checked : e.target.value;
-      setForm((prev) => ({ ...prev, [field]: value }));
-    };
+  const set = <K extends keyof BannerFormValues>(field: K, value: BannerFormValues[K]) =>
+    setForm((prev) => ({ ...prev, [field]: value }));
 
   const handleImageChange =
     (field: "imageUrl" | "mobileImageUrl", uploadKey: "desktop" | "mobile") =>
@@ -105,7 +128,7 @@ export default function BannerForm({ initial, onSubmit, onCancel }: BannerFormPr
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Upload failed.");
-        setForm((prev) => ({ ...prev, [field]: data.url }));
+        set(field, data.url);
       } catch (err) {
         setUploadError((err as Error).message);
       } finally {
@@ -115,162 +138,234 @@ export default function BannerForm({ initial, onSubmit, onCancel }: BannerFormPr
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ ...form, order: Number(form.order) || 0 });
+    onSubmit({ ...form, order: Number(form.order) || 0, overlayOpacity: Number(form.overlayOpacity) || 0 });
   };
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      <label className={styles.label}>
-        Title
-        <input className={styles.input} value={form.title} onChange={set("title")} required />
-      </label>
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="space-y-2">
+        <Label htmlFor="banner-title">Title</Label>
+        <Input id="banner-title" value={form.title} onChange={(e) => set("title", e.target.value)} required />
+      </div>
 
-      <div className={styles.formRow}>
-        <label className={styles.label}>
-          Eyebrow (small label above title)
-          <input className={styles.input} value={form.eyebrow} onChange={set("eyebrow")} />
-        </label>
-        <label className={styles.label}>
-          Discount badge (optional)
-          <input
-            className={styles.input}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="banner-eyebrow">Eyebrow (small label above title)</Label>
+          <Input id="banner-eyebrow" value={form.eyebrow} onChange={(e) => set("eyebrow", e.target.value)} />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="banner-discount">Discount badge (optional)</Label>
+          <Input
+            id="banner-discount"
             value={form.discount}
-            onChange={set("discount")}
+            onChange={(e) => set("discount", e.target.value)}
             placeholder="Up to 20% OFF"
           />
-        </label>
+        </div>
       </div>
 
-      <label className={styles.label}>
-        Subtitle
-        <textarea className={styles.textarea} value={form.subtitle} onChange={set("subtitle")} />
-      </label>
-
-      <div className={styles.formRow}>
-        <label className={styles.label}>
-          Desktop Image
-          <input
-            type="file"
-            accept="image/*"
-            className={styles.input}
-            onChange={handleImageChange("imageUrl", "desktop")}
-          />
-          <button
-            type="button"
-            className={styles.cancelBtn}
-            style={{ marginTop: "0.4rem" }}
-            onClick={() => setPickerTarget("imageUrl")}
-          >
-            Choose from Library
-          </button>
-        </label>
-        <label className={styles.label}>
-          Mobile Image (optional — falls back to desktop image)
-          <input
-            type="file"
-            accept="image/*"
-            className={styles.input}
-            onChange={handleImageChange("mobileImageUrl", "mobile")}
-          />
-          <button
-            type="button"
-            className={styles.cancelBtn}
-            style={{ marginTop: "0.4rem" }}
-            onClick={() => setPickerTarget("mobileImageUrl")}
-          >
-            Choose from Library
-          </button>
-        </label>
+      <div className="space-y-2">
+        <Label htmlFor="banner-subtitle">Subtitle</Label>
+        <Textarea id="banner-subtitle" rows={2} value={form.subtitle} onChange={(e) => set("subtitle", e.target.value)} />
       </div>
-      {uploading && <p className={styles.uploadStatus}>Uploading {uploading} image…</p>}
-      {uploadError && <p className={styles.uploadError}>{uploadError}</p>}
-      {(form.imageUrl || form.mobileImageUrl) && (
-        <div className={styles.thumbGrid}>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="banner-desktop-image">Desktop Image</Label>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="outline" size="sm" asChild disabled={uploading !== ""}>
+              <label className="cursor-pointer">
+                {uploading === "desktop" ? "Uploading…" : "Upload"}
+                <input
+                  id="banner-desktop-image"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange("imageUrl", "desktop")}
+                />
+              </label>
+            </Button>
+            <Button type="button" variant="outline" size="sm" onClick={() => setPickerTarget("imageUrl")}>
+              Choose from Library
+            </Button>
+          </div>
           {form.imageUrl && (
-            <div className={styles.thumbItem}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={form.imageUrl} alt="Desktop preview" className={styles.thumbImage} />
-            </div>
-          )}
-          {form.mobileImageUrl && (
-            <div className={styles.thumbItem}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={form.mobileImageUrl} alt="Mobile preview" className={styles.thumbImage} />
+            <div className="relative mt-2 h-24 w-full overflow-hidden rounded-md border bg-muted">
+              <NextImage src={form.imageUrl} alt="Desktop preview" fill sizes="320px" className="object-cover" />
             </div>
           )}
         </div>
-      )}
+        <div className="space-y-2">
+          <Label htmlFor="banner-mobile-image">Mobile Image (optional — falls back to desktop image)</Label>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="outline" size="sm" asChild disabled={uploading !== ""}>
+              <label className="cursor-pointer">
+                {uploading === "mobile" ? "Uploading…" : "Upload"}
+                <input
+                  id="banner-mobile-image"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange("mobileImageUrl", "mobile")}
+                />
+              </label>
+            </Button>
+            <Button type="button" variant="outline" size="sm" onClick={() => setPickerTarget("mobileImageUrl")}>
+              Choose from Library
+            </Button>
+          </div>
+          {form.mobileImageUrl && (
+            <div className="relative mt-2 h-24 w-full overflow-hidden rounded-md border bg-muted">
+              <NextImage src={form.mobileImageUrl} alt="Mobile preview" fill sizes="320px" className="object-cover" />
+            </div>
+          )}
+        </div>
+      </div>
+      {uploadError && <p className="text-sm font-medium text-destructive">{uploadError}</p>}
 
-      <div className={styles.formRow}>
-        <label className={styles.label}>
-          Button URL
-          <input
-            className={styles.input}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="banner-link">Button URL</Label>
+          <Input
+            id="banner-link"
             value={form.linkUrl}
-            onChange={set("linkUrl")}
+            onChange={(e) => set("linkUrl", e.target.value)}
             placeholder="/category/solar"
           />
-        </label>
-        <label className={styles.label}>
-          Display Order
-          <input type="number" className={styles.input} value={form.order} onChange={set("order")} />
-        </label>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="banner-cta">Button Text (optional)</Label>
+          <Input
+            id="banner-cta"
+            value={form.ctaLabel}
+            onChange={(e) => set("ctaLabel", e.target.value)}
+            placeholder="Shop Now"
+          />
+        </div>
       </div>
 
-      <label className={styles.label}>
-        Button Text (optional)
+      <div className="flex items-center justify-between rounded-md border p-3">
+        <div>
+          <Label htmlFor="banner-new-tab">Open button link in a new tab</Label>
+          <p className="text-xs text-muted-foreground">Useful for links to external sites.</p>
+        </div>
+        <Switch id="banner-new-tab" checked={form.openInNewTab} onCheckedChange={(v) => set("openInNewTab", v)} />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="banner-order">Display Priority</Label>
+          <Input
+            id="banner-order"
+            type="number"
+            value={form.order}
+            onChange={(e) => set("order", Number(e.target.value))}
+          />
+          <p className="text-xs text-muted-foreground">Lower numbers show first. Drag rows in the list to reorder instead.</p>
+        </div>
+        <div className="space-y-2">
+          <Label>Status</Label>
+          <Select value={form.status} onValueChange={(v) => set("status", v as BannerFormValues["status"])}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="DRAFT">Draft — never shown on the homepage</SelectItem>
+              <SelectItem value="ACTIVE">Active — follows the Enabled toggle and dates below</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="banner-start">Start Date (optional — leave blank to go live immediately)</Label>
+          <Input id="banner-start" type="date" value={form.startDate} onChange={(e) => set("startDate", e.target.value)} />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="banner-end">End Date (optional — leave blank to run indefinitely)</Label>
+          <Input id="banner-end" type="date" value={form.endDate} onChange={(e) => set("endDate", e.target.value)} />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="banner-overlay">Background overlay strength</Label>
+          <span className="font-mono text-xs text-muted-foreground">{form.overlayOpacity}%</span>
+        </div>
         <input
-          className={styles.input}
-          value={form.ctaLabel}
-          onChange={set("ctaLabel")}
-          placeholder="Shop Now"
+          id="banner-overlay"
+          type="range"
+          min={0}
+          max={100}
+          step={5}
+          value={form.overlayOpacity}
+          onChange={(e) => set("overlayOpacity", Number(e.target.value))}
+          className="w-full accent-primary"
         />
-      </label>
-
-      <div className={styles.formRow}>
-        <label className={styles.label}>
-          Start Date (optional — leave blank to go live immediately)
-          <input type="date" className={styles.input} value={form.startDate} onChange={set("startDate")} />
-        </label>
-        <label className={styles.label}>
-          End Date (optional — leave blank to run indefinitely)
-          <input type="date" className={styles.input} value={form.endDate} onChange={set("endDate")} />
-        </label>
+        <p className="text-xs text-muted-foreground">
+          Darkens the left side of the photo so the title stays readable. Lower it for already-dark photos.
+        </p>
       </div>
 
-      <label className={styles.label}>
-        Background (CSS color or gradient, used as a fallback behind the image)
-        <input className={styles.input} value={form.bgColor} onChange={set("bgColor")} />
-      </label>
+      <div className="space-y-2">
+        <Label>Text alignment</Label>
+        <div className="flex overflow-hidden rounded-md border w-fit">
+          {TEXT_ALIGN_OPTIONS.map(({ value, label, Icon }, i) => (
+            <Button
+              key={value}
+              type="button"
+              variant="ghost"
+              size="sm"
+              aria-label={`Align text ${label.toLowerCase()}`}
+              aria-pressed={form.textAlign === value}
+              className={`rounded-none ${i > 0 ? "border-l" : ""} ${form.textAlign === value ? "bg-accent" : ""}`}
+              onClick={() => set("textAlign", value)}
+            >
+              <Icon className="size-4" /> {label}
+            </Button>
+          ))}
+        </div>
+      </div>
 
-      <label className={styles.checkboxLabel}>
-        <input type="checkbox" checked={form.active} onChange={set("active")} />
-        Active (visible on homepage when within its date range)
-      </label>
+      <div className="space-y-2">
+        <Label htmlFor="banner-bg">Background (CSS color or gradient, used as a fallback behind the image)</Label>
+        <Input id="banner-bg" value={form.bgColor} onChange={(e) => set("bgColor", e.target.value)} />
+      </div>
 
-      <div className={styles.formActions}>
-        <button type="submit" className={styles.saveBtn} disabled={uploading !== ""}>
-          {initial ? "Save Changes" : "Add Banner"}
-        </button>
-        <button
+      <div className="flex items-center justify-between rounded-md border p-3">
+        <div>
+          <Label htmlFor="banner-active">Enabled</Label>
+          <p className="text-xs text-muted-foreground">Visible on the homepage when Active and within its date range.</p>
+        </div>
+        <Switch id="banner-active" checked={form.active} onCheckedChange={(v) => set("active", v)} />
+      </div>
+
+      <DialogFooter className="gap-2 sm:justify-between">
+        <Button
           type="button"
-          className={styles.cancelBtn}
+          variant="outline"
           onClick={() => setShowPreview(true)}
           disabled={!form.imageUrl && !form.mobileImageUrl}
         >
-          Preview
-        </button>
-        <button type="button" className={styles.cancelBtn} onClick={onCancel}>
-          Cancel
-        </button>
-      </div>
+          <Eye className="size-4" /> Preview
+        </Button>
+        <div className="flex gap-2">
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={uploading !== "" || saving}>
+            {saving ? "Saving…" : initial ? "Save Changes" : "Add Banner"}
+          </Button>
+        </div>
+      </DialogFooter>
 
       {pickerTarget && (
         <MediaPicker
           defaultFolder="Banners"
           onClose={() => setPickerTarget(null)}
           onChoose={(asset: PlainMediaAsset) => {
-            setForm((prev) => ({ ...prev, [pickerTarget]: asset.url }));
+            set(pickerTarget, asset.url);
             setPickerTarget(null);
           }}
         />
@@ -285,6 +380,8 @@ export default function BannerForm({ initial, onSubmit, onCancel }: BannerFormPr
             ctaLabel: form.ctaLabel,
             imageUrl: form.imageUrl,
             mobileImageUrl: form.mobileImageUrl,
+            overlayOpacity: form.overlayOpacity,
+            textAlign: form.textAlign,
           }}
           onClose={() => setShowPreview(false)}
         />

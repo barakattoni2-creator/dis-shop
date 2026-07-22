@@ -159,6 +159,10 @@ export interface PlainBanner {
   startDate: string | null;
   endDate: string | null;
   active: boolean;
+  status: "DRAFT" | "ACTIVE";
+  overlayOpacity: number;
+  textAlign: "left" | "center" | "right";
+  openInNewTab: boolean;
 }
 
 export interface PlainMediaAsset {

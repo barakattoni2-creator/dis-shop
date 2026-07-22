@@ -9,6 +9,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import ProductImage from "@/components/ProductImage";
 import { calcDiscount } from "@/utils/format";
+import { buildBannerOverlayGradient } from "@/lib/bannerOverlay";
 import { ChevronLeftIcon, ChevronRightIcon, CheckIcon, TruckIcon, ShieldIcon } from "@/components/icons";
 import styles from "@/styles/HeroBanner.module.css";
 import type { PlainBanner, PlainProduct } from "@/types/domain";
@@ -123,6 +124,9 @@ interface BannerSlide {
   ctaLabel: string;
   image: string;
   mobileImage: string;
+  overlayOpacity: number;
+  textAlign: "left" | "center" | "right";
+  openInNewTab: boolean;
 }
 
 interface ProductSlide {
@@ -174,6 +178,9 @@ export default function HeroBanner({ banners, products = [] }: HeroBannerProps) 
         ctaLabel: b.ctaLabel || "Shop Now",
         image: b.imageUrl!,
         mobileImage: b.mobileImageUrl || b.imageUrl!,
+        overlayOpacity: b.overlayOpacity,
+        textAlign: b.textAlign,
+        openInNewTab: b.openInNewTab,
       }))
     : [];
 
@@ -281,8 +288,8 @@ export default function HeroBanner({ banners, products = [] }: HeroBannerProps) 
                   className={styles.bannerImage}
                 />
               </div>
-              <div className={styles.bannerOverlay} />
-              <div className={styles.bannerContentWrap}>
+              <div className={styles.bannerOverlay} style={{ background: buildBannerOverlayGradient(slide.overlayOpacity) }} />
+              <div className={styles.bannerContentWrap} data-align={slide.textAlign}>
                 <div className={styles.bannerContent}>
                   {slide.eyebrow && <span className={styles.eyebrow}>{slide.eyebrow}</span>}
                   {i === activeIndex ? (
@@ -292,7 +299,12 @@ export default function HeroBanner({ banners, products = [] }: HeroBannerProps) 
                   )}
                   {slide.subtitle && <p className={styles.bannerSubtitle}>{slide.subtitle}</p>}
                   <div className={styles.ctaRow}>
-                    <Link href={slide.href} className={styles.ctaPrimary}>
+                    <Link
+                      href={slide.href}
+                      className={styles.ctaPrimary}
+                      target={slide.openInNewTab ? "_blank" : undefined}
+                      rel={slide.openInNewTab ? "noopener noreferrer" : undefined}
+                    >
                       {slide.ctaLabel}
                     </Link>
                     <Link href="/shop" className={styles.ctaSecondary}>

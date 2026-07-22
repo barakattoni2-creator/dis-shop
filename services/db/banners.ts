@@ -18,6 +18,10 @@ function toPlain(row: Banner): PlainBanner {
     startDate: row.startDate ? row.startDate.toISOString() : null,
     endDate: row.endDate ? row.endDate.toISOString() : null,
     active: row.active,
+    status: row.status === "DRAFT" ? "DRAFT" : "ACTIVE",
+    overlayOpacity: row.overlayOpacity,
+    textAlign: row.textAlign === "center" || row.textAlign === "right" ? row.textAlign : "left",
+    openInNewTab: row.openInNewTab,
   };
 }
 
@@ -33,12 +37,15 @@ export async function fetchAllBanners(): Promise<PlainBanner[]> {
 // Active AND within its scheduling window (if any) — used by the storefront
 // homepage. A null startDate/endDate means "no lower/upper bound", so a
 // banner with neither set behaves exactly as before this feature existed.
+// DRAFT banners are excluded unconditionally, regardless of `active`/dates —
+// existing rows default to status "ACTIVE" so nothing already live changes.
 export async function fetchActiveBanners(): Promise<PlainBanner[]> {
   if (!isDbConfigured()) return [];
   const now = new Date();
   const rows = await prisma!.banner.findMany({
     where: {
       active: true,
+      status: "ACTIVE",
       OR: [{ startDate: null }, { startDate: { lte: now } }],
       AND: [{ OR: [{ endDate: null }, { endDate: { gte: now } }] }],
     },
@@ -61,6 +68,10 @@ export interface BannerInput {
   startDate?: string | null;
   endDate?: string | null;
   active?: boolean;
+  status?: "DRAFT" | "ACTIVE";
+  overlayOpacity?: number | string;
+  textAlign?: "left" | "center" | "right";
+  openInNewTab?: boolean;
 }
 
 function toDateOrNull(value: string | null | undefined): Date | null {
@@ -86,6 +97,10 @@ export async function createBanner(data: BannerInput): Promise<PlainBanner> {
       startDate: toDateOrNull(data.startDate),
       endDate: toDateOrNull(data.endDate),
       active: data.active ?? true,
+      status: data.status || "ACTIVE",
+      overlayOpacity: data.overlayOpacity !== undefined ? Number(data.overlayOpacity) || 0 : 100,
+      textAlign: data.textAlign || "left",
+      openInNewTab: data.openInNewTab ?? false,
     },
   });
   return toPlain(row);
@@ -97,6 +112,7 @@ export async function updateBanner(id: string, patch: Partial<BannerInput>): Pro
   if ("order" in data) data.order = Number(data.order) || 0;
   if ("startDate" in data) data.startDate = toDateOrNull(patch.startDate);
   if ("endDate" in data) data.endDate = toDateOrNull(patch.endDate);
+  if ("overlayOpacity" in data) data.overlayOpacity = Number(data.overlayOpacity) || 0;
   const row = await prisma!.banner.update({ where: { id }, data });
   return toPlain(row);
 }

@@ -385,6 +385,18 @@ model Banner {
   startDate DateTime?
   endDate   DateTime?
   active    Boolean  @default(true)
+  // Publishing workflow, separate from `active`: a DRAFT banner never shows
+  // on the storefront regardless of `active`/dates, letting an admin build
+  // and preview a banner privately before switching it live. Existing rows
+  // default to ACTIVE so nothing already live is hidden by this field.
+  status    String   @default("ACTIVE")
+  // Overlay strength as a percentage of the original designed gradient
+  // (100 = today's fixed look, reproduced exactly by scaling each stop's
+  // alpha) — added as a dial rather than a fixed value so brighter photos
+  // can use a lighter scrim without changing the gradient shape itself.
+  overlayOpacity Int @default(100)
+  textAlign String @default("left")
+  openInNewTab Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
