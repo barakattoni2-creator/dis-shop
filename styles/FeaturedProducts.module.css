@@ -14,9 +14,11 @@
 }
 
 .heading {
-  font-size: 1.6rem;
+  font-size: 1.85rem;
   font-weight: 800;
   color: var(--dis-navy);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 .subtitle {
@@ -126,7 +128,7 @@
   }
 
   .heading {
-    font-size: 1.35rem;
+    font-size: 1.5rem;
     margin-bottom: 0;
   }
 

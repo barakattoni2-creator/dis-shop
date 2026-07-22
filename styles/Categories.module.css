@@ -1,5 +1,9 @@
+/* Top padding trimmed relative to other sections (56px) — Categories
+   comes right after the hero/feature strip and should read as part of
+   that first screenful, not a separate section with the same breathing
+   room as everything further down the page. */
 .section {
-  padding: 56px 1.5rem;
+  padding: 32px 1.5rem 56px;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -14,9 +18,11 @@
 }
 
 .heading {
-  font-size: 1.6rem;
+  font-size: 1.85rem;
   font-weight: 800;
   color: var(--dis-navy);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 .viewAll {
@@ -143,7 +149,11 @@
 
 @media (max-width: 640px) {
   .section {
-    padding: 36px 1rem;
+    padding: 22px 1rem 36px;
+  }
+
+  .heading {
+    font-size: 1.5rem;
   }
 
   .grid {

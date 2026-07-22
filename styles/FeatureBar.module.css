@@ -19,10 +19,16 @@
   gap: 0.75rem;
   padding: 0.4rem 1rem;
   border-right: 1px solid var(--border);
+  border-radius: 10px;
+  transition: background 0.2s ease;
 }
 
 .item:last-child {
   border-right: none;
+}
+
+.item:hover {
+  background: var(--surface);
 }
 
 .iconWrap {
@@ -35,6 +41,13 @@
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, rgba(10, 77, 255, 0.14), rgba(10, 77, 255, 0.06));
   color: var(--dis-blue);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s ease, color 0.3s ease;
+}
+
+.item:hover .iconWrap {
+  transform: scale(1.1) rotate(-4deg);
+  background: var(--dis-orange);
+  color: #fff;
 }
 
 .text {
