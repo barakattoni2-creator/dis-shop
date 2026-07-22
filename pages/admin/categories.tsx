@@ -1,30 +1,41 @@
 import { useEffect, useState } from "react";
+import type { GetServerSideProps } from "next";
+import { Plus } from "lucide-react";
 import AdminLayout from "@/features/admin/AdminLayout";
 import CategoryTree from "@/features/admin/CategoryTree";
 import CategoryForm from "@/features/admin/CategoryForm";
 import ConfirmDialog from "@/features/admin/ConfirmDialog";
-import { requireAdminPage } from "@/lib/adminAuth";
+import { Button } from "@/components/ui/button";
+import { requireAdminPage, type AnyRes } from "@/lib/adminAuth";
 import { PERMISSIONS } from "@/data/adminRoles";
 import { isDbConfigured } from "@/lib/db";
-import styles from "@/styles/Admin.module.css";
+import type { AdminRole } from "@/types/domain";
 
-export async function getServerSideProps({ req, res }) {
-  const guard = await requireAdminPage(req, res, PERMISSIONS.MANAGE_CATEGORIES);
-  if (guard.redirect) return guard;
+interface AdminCategoriesPageProps {
+  email: string;
+  role: AdminRole;
+  dbConfigured: boolean;
+}
+
+export const getServerSideProps: GetServerSideProps<AdminCategoriesPageProps> = async ({ req, res }) => {
+  const guard = await requireAdminPage(req, res as unknown as AnyRes, PERMISSIONS.MANAGE_CATEGORIES);
+  if ("redirect" in guard) return guard;
   return {
     props: { email: guard.session.email, role: guard.session.role, dbConfigured: isDbConfigured() },
   };
-}
+};
 
-export default function AdminCategoriesPage({ email, role, dbConfigured }) {
-  const [categories, setCategories] = useState([]);
+type CategoryNode = any;
+type PendingAction = any;
+
+export default function AdminCategoriesPage({ email, role, dbConfigured }: AdminCategoriesPageProps) {
+  const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(null);
+  const [editing, setEditing] = useState<CategoryNode | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [formError, setFormError] = useState("");
   const [error, setError] = useState("");
-  // { type: "delete" | "toggle" | "move", node, extra }
-  const [pendingAction, setPendingAction] = useState(null);
+  const [pendingAction, setPendingAction] = useState<PendingAction>(null);
 
   const reload = () => {
     fetch("/api/admin/categories?format=flat")
@@ -39,7 +50,7 @@ export default function AdminCategoriesPage({ email, role, dbConfigured }) {
     reload();
   }, []);
 
-  const handleSubmit = async (data) => {
+  const handleSubmit = async (data: Record<string, unknown>) => {
     setFormError("");
     try {
       const res = editing
@@ -59,11 +70,11 @@ export default function AdminCategoriesPage({ email, role, dbConfigured }) {
       setEditing(null);
       reload();
     } catch (err) {
-      setFormError(err.message);
+      setFormError((err as Error).message);
     }
   };
 
-  const runAction = async (action) => {
+  const runAction = async (action: PendingAction) => {
     setError("");
     try {
       if (action.type === "delete") {
@@ -90,15 +101,13 @@ export default function AdminCategoriesPage({ email, role, dbConfigured }) {
       setPendingAction(null);
       reload();
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
       setPendingAction(null);
     }
   };
 
-  const handleReorder = async (parentId, orderedIds) => {
+  const handleReorder = async (parentId: string | null, orderedIds: string[]) => {
     setError("");
-    // Optimistic — update local order immediately so the row doesn't snap
-    // back while the request is in flight.
     setCategories((prev) => {
       const next = [...prev];
       orderedIds.forEach((id, index) => {
@@ -121,58 +130,63 @@ export default function AdminCategoriesPage({ email, role, dbConfigured }) {
 
   return (
     <AdminLayout title="Categories" email={email} role={role}>
-      <div className={styles.main}>
-        <div className={styles.headerRow}>
-          <div />
-          <button
-            className={styles.addBtn}
+      <div className="shadcn-root">
+        <div className="mb-4 flex items-center justify-between">
+          <h1 className="text-xl font-bold">Categories</h1>
+          <Button
+            size="sm"
+            disabled={!dbConfigured}
             onClick={() => {
               setEditing(null);
               setFormError("");
               setShowForm(true);
             }}
-            disabled={!dbConfigured}
           >
-            + Add Category
-          </button>
+            <Plus className="size-4" /> Add Category
+          </Button>
         </div>
 
         {!dbConfigured && (
-          <p className={styles.note}>
+          <p className="mb-4 rounded-md border bg-muted/40 p-3 text-sm text-muted-foreground">
             No database connected yet. Set <code>DATABASE_URL</code> to manage categories.
           </p>
         )}
-        {error && <p className={styles.uploadError}>{error}</p>}
+        {error && <p className="mb-4 text-sm font-medium text-destructive">{error}</p>}
 
         {loading ? (
-          <p className={styles.empty}>Loading…</p>
+          <p className="p-8 text-center text-sm text-muted-foreground">Loading…</p>
         ) : (
-          <CategoryTree
-            categories={categories}
-            onEdit={(node) => {
-              setEditing(node);
-              setFormError("");
-              setShowForm(true);
-            }}
-            onRequestDelete={(node) => setPendingAction({ type: "delete", node })}
-            onRequestToggleActive={(node) => setPendingAction({ type: "toggle", node })}
-            onRequestMove={(draggedId, newParentId, newParentName) =>
-              setPendingAction({
-                type: "move",
-                node: categories.find((c) => c.id === draggedId),
-                draggedId,
-                newParentId,
-                newParentName,
-              })
-            }
-            onRequestReorder={handleReorder}
-          />
+          <div className="rounded-lg border bg-card p-2">
+            <CategoryTree
+              categories={categories}
+              onEdit={(node: CategoryNode) => {
+                setEditing(node);
+                setFormError("");
+                setShowForm(true);
+              }}
+              onRequestDelete={(node: CategoryNode) => setPendingAction({ type: "delete", node })}
+              onRequestToggleActive={(node: CategoryNode) => setPendingAction({ type: "toggle", node })}
+              onRequestMove={(draggedId: string, newParentId: string | null, newParentName: string) =>
+                setPendingAction({
+                  type: "move",
+                  node: categories.find((c) => c.id === draggedId),
+                  draggedId,
+                  newParentId,
+                  newParentName,
+                })
+              }
+              onRequestReorder={handleReorder}
+            />
+          </div>
         )}
 
         {showForm && (
-          <div className={styles.modalOverlay} onClick={() => setShowForm(false)}>
-            <div className={styles.modal} onClick={(e) => e.stopPropagation()} style={{ maxWidth: 640 }}>
-              <h2 className={styles.modalHeading}>{editing ? "Edit Category" : "Add Category"}</h2>
+          <div className="fixed inset-0 z-[200] flex items-start justify-center overflow-y-auto bg-black/40 p-8" onClick={() => setShowForm(false)}>
+            <div
+              className="w-full max-w-2xl rounded-lg border bg-card p-6 text-card-foreground"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="mb-4 text-lg font-semibold">{editing ? "Edit Category" : "Add Category"}</h2>
               <CategoryForm
                 initial={editing}
                 categories={categories}
@@ -213,6 +227,7 @@ export default function AdminCategoriesPage({ email, role, dbConfigured }) {
             title="Move Category"
             message={`Move "${pendingAction.node?.name}" under "${pendingAction.newParentName || "Top Level"}"?`}
             confirmLabel="Move"
+            danger={false}
             onConfirm={() => runAction(pendingAction)}
             onCancel={() => setPendingAction(null)}
           />

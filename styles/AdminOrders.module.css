@@ -28,7 +28,7 @@
 }
 
 .summaryCard {
-  background: #fff;
+  background: var(--background);
   border: 1px solid var(--border);
   border-left: 4px solid var(--dis-blue);
   border-radius: 10px;
@@ -59,13 +59,13 @@
 .summaryLabel {
   font-size: 0.78rem;
   font-weight: 600;
-  color: #565959;
+  color: var(--muted-fg);
 }
 
 /* Toolbar */
 
 .toolbar {
-  background: #fff;
+  background: var(--background);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 1rem;
@@ -95,7 +95,7 @@
   font-size: 0.85rem;
   font-family: inherit;
   color: var(--dis-navy);
-  background: #fff;
+  background: var(--background);
 }
 
 .searchInput:focus,
@@ -153,7 +153,7 @@
 }
 .badgeGray {
   background: #f0f1f3;
-  color: #6b7280;
+  color: var(--muted-fg);
 }
 
 .statusSelect {
@@ -165,7 +165,7 @@
   font-weight: 700;
   font-family: inherit;
   color: var(--dis-navy);
-  background: #fff;
+  background: var(--background);
 }
 
 /* Table extras */
@@ -197,7 +197,7 @@
   justify-content: center;
   gap: 0.7rem;
   font-size: 0.85rem;
-  color: #565959;
+  color: var(--muted-fg);
   margin-top: 1rem;
 }
 
@@ -205,7 +205,7 @@
   border-radius: 6px;
   padding: 0.35rem 0.8rem;
   font-weight: 700;
-  background: #fff;
+  background: var(--background);
   border: 1px solid var(--border);
   color: var(--dis-navy);
 }
@@ -234,7 +234,7 @@
 }
 
 .card {
-  background: #fff;
+  background: var(--background);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 1.3rem;
@@ -274,7 +274,7 @@
   font-weight: 700;
   letter-spacing: 0.2px;
   text-transform: uppercase;
-  color: #7a8699;
+  color: var(--muted-fg);
 }
 
 .infoValue {
@@ -329,7 +329,7 @@
 }
 
 .financialLabel {
-  color: #565959;
+  color: var(--muted-fg);
   font-weight: 600;
 }
 
@@ -402,7 +402,7 @@
   padding: 0.5rem 0.8rem;
   font-size: 0.83rem;
   font-weight: 700;
-  background: #fff;
+  background: var(--background);
   border: 1.5px solid var(--border);
   color: var(--dis-navy);
 }
@@ -488,12 +488,12 @@
 
 .timelineMeta {
   font-size: 0.75rem;
-  color: #7a8699;
+  color: var(--muted-fg);
   margin-top: 0.15rem;
 }
 
 .empty {
-  color: #565959;
+  color: var(--muted-fg);
   padding: 1.5rem 0;
   text-align: center;
   font-size: 0.88rem;
@@ -511,7 +511,7 @@
   border-radius: 8px;
   padding: 0.9rem 1.1rem;
   font-size: 0.85rem;
-  color: #565959;
+  color: var(--muted-fg);
   margin-bottom: 1.2rem;
   line-height: 1.5;
 }

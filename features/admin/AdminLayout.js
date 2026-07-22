@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { href: "/admin/orders", label: "Orders", icon: "🧾" },
   { href: "/admin/deliveries", label: "Deliveries", icon: "🚚" },
   { href: "/admin/customers", label: "Customers", icon: "👥" },
+  { href: "/admin/reports", label: "Reports", icon: "📈" },
   { href: "/admin/ai", label: "AI Assistants", icon: "🤖" },
   { href: "/admin/settings", label: "Settings", icon: "⚙️" },
   { href: "/admin/odoo", label: "Odoo", icon: "🔗" },
