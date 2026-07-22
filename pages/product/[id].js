@@ -42,20 +42,21 @@ function formatZoneList(zones) {
 }
 
 export async function getStaticPaths() {
-  const items = await fetchProducts();
-  return {
-    paths: items.map((p) => ({ params: { id: p.id } })),
-    fallback: "blocking",
-  };
+  // Every product is generated on-demand and cached (ISR) rather than
+  // enumerated at build time — same pattern as pages/category/[slug].js
+  // and pages/brand/[name].js. No Prisma call happens during `next build`,
+  // so a DB hiccup (or a build environment that can't reach it) can no
+  // longer fail the whole build, only the first request to a given product.
+  return { paths: [], fallback: "blocking" };
 }
 
 export async function getStaticProps({ params }) {
-  const product = await fetchProductById(params.id);
+  const product = await fetchProductById(params.id).catch(() => null);
   if (!product) return { notFound: true };
   const [items, reviews, category] = await Promise.all([
-    fetchProducts(),
-    fetchReviewsForProduct(product.id),
-    fetchCategoryDetail(product.category),
+    fetchProducts().catch(() => []),
+    fetchReviewsForProduct(product.id).catch(() => []),
+    fetchCategoryDetail(product.category).catch(() => null),
   ]);
   const related = items.filter(
     (p) => p.category === product.category && p.id !== product.id

@@ -6,16 +6,20 @@ import { fetchProducts, fetchBrands } from "@/lib/catalog";
 import styles from "@/styles/CategoryPage.module.css";
 
 export async function getStaticPaths() {
-  const brands = await fetchBrands();
-  return {
-    paths: brands.map((b) => ({ params: { name: encodeURIComponent(b.name) } })),
-    fallback: "blocking",
-  };
+  // Every brand is generated on-demand and cached (ISR) rather than
+  // enumerated at build time — same pattern as pages/category/[slug].js.
+  // Critically, this means no Prisma call happens during `next build`: a
+  // DB hiccup (or a build environment that can't reach it) can no longer
+  // fail the whole build, only the first request to a given brand page.
+  return { paths: [], fallback: "blocking" };
 }
 
 export async function getStaticProps({ params }) {
   const brandName = decodeURIComponent(params.name);
-  const [items, brands] = await Promise.all([fetchProducts(), fetchBrands()]);
+  const [items, brands] = await Promise.all([
+    fetchProducts().catch(() => []),
+    fetchBrands().catch(() => []),
+  ]);
   const brand = brands.find((b) => b.name === brandName);
   const products = items.filter((p) => p.brand === brandName);
   if (!brand && products.length === 0) return { notFound: true };
