@@ -1,5 +1,6 @@
 import Layout from "@/components/Layout";
 import HeroBanner from "@/components/HeroBanner";
+import FeatureBar from "@/components/FeatureBar";
 import Categories from "@/components/Categories";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import SpecialOffers from "@/components/SpecialOffers";
@@ -79,6 +80,8 @@ export default function Home({ products, banners, categories, brands }) {
       description="DIS Shop: your one-stop shop in Juba, South Sudan for air conditioners, solar equipment, tools, household appliances, electrical supplies and lighting."
     >
       <HeroBanner banners={banners} products={heroProducts} />
+
+      <FeatureBar />
 
       <Reveal>
         <Categories products={products} categories={categories} />

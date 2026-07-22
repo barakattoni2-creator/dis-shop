@@ -13,8 +13,8 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 1.25rem;
-  padding: 1rem 1.5rem;
+  gap: 1.5rem;
+  padding: 1.15rem 1.5rem;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -30,7 +30,7 @@
 .logo {
   display: flex;
   align-items: baseline;
-  gap: 0.15rem;
+  gap: 0.3rem;
   flex-shrink: 0;
   border: 1px solid transparent;
   padding: 0.3rem;
@@ -41,24 +41,29 @@
   border-color: #fff;
 }
 
+/* Sized ~25% up from the original 1.3rem/1.8rem pairing for more presence
+   in the header without changing the header's own height enough to shift
+   the rest of the layout. */
 .logoBadge {
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--dis-orange);
   color: #fff;
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   font-weight: 800;
   letter-spacing: 0.5px;
-  padding: 0.32rem 0.6rem;
-  border-radius: 6px;
+  padding: 0.4rem 0.75rem;
+  border-radius: 7px;
   line-height: 1;
+  box-shadow: 0 2px 8px rgba(255, 106, 0, 0.35);
 }
 
 .logoText {
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 2.25rem;
+  font-weight: 800;
   color: #fff;
+  letter-spacing: -0.01em;
 }
 
 .searchWrap {
@@ -147,7 +152,7 @@
 .actions {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.4rem;
   flex-shrink: 0;
   justify-self: end;
 }
@@ -156,12 +161,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.4rem 0.6rem;
+  padding: 0.45rem 0.7rem;
   border: 1px solid transparent;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  line-height: 1.1;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  line-height: 1.15;
   white-space: nowrap;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .actionLink:hover {
@@ -200,9 +206,9 @@
 .navBar {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.75rem;
   background: var(--dis-navy-light);
-  padding: 0.6rem 1.25rem;
+  padding: 0.75rem 1.5rem;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -210,20 +216,23 @@
 .navLinks {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.75rem;
   overflow-x: auto;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-weight: 600;
+  letter-spacing: 0.15px;
   white-space: nowrap;
 }
 
 .navLink {
-  padding: 0.25rem 0.1rem;
+  padding: 0.35rem 0.2rem;
   border-bottom: 2px solid transparent;
+  transition: border-color 0.15s ease, color 0.15s ease;
 }
 
 .navLink:hover {
   border-bottom-color: var(--dis-orange);
+  color: #fff;
 }
 
 .specialBtn {
@@ -324,6 +333,15 @@
   .mainBar {
     grid-template-columns: auto auto 1fr;
     row-gap: 0.7rem;
+  }
+
+  .logoBadge {
+    font-size: 1.35rem;
+    padding: 0.32rem 0.6rem;
+  }
+
+  .logoText {
+    font-size: 1.85rem;
   }
 
   .actions {
