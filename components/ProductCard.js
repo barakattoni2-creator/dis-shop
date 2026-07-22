@@ -97,6 +97,17 @@ export default function ProductCard({ product, onView, onAddToCart }) {
             ))}
           </div>
         )}
+        <button
+          type="button"
+          className={styles.quickViewBar}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setQuickView(true);
+          }}
+        >
+          <ZoomIcon width="14" height="14" /> Quick View
+        </button>
       </Link>
 
       <div className={styles.info}>

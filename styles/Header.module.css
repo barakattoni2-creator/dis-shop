@@ -27,8 +27,8 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 1.5rem;
-  padding: 1.15rem 1.5rem;
+  gap: 1.75rem;
+  padding: 1.3rem 1.5rem;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -55,29 +55,28 @@
   border-color: #fff;
 }
 
-/* Sized ~25% up from the original 1.3rem/1.8rem pairing for more presence
-   in the header without changing the header's own height enough to shift
-   the rest of the layout. */
+/* Sized ~35% up again from the 1.6rem/2.25rem pairing (itself already a
+   ~25% bump from the original 1.3rem/1.8rem) for stronger header presence. */
 .logoBadge {
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--dis-orange);
   color: #fff;
-  font-size: 1.6rem;
+  font-size: 2.15rem;
   font-weight: 800;
   letter-spacing: 0.5px;
-  padding: 0.4rem 0.75rem;
-  border-radius: 7px;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
   line-height: 1;
-  box-shadow: 0 2px 8px rgba(255, 106, 0, 0.35);
+  box-shadow: 0 3px 10px rgba(255, 106, 0, 0.4);
 }
 
 .logoText {
-  font-size: 2.25rem;
+  font-size: 3rem;
   font-weight: 800;
   color: #fff;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 
 .searchWrap {
@@ -87,11 +86,16 @@
 .searchForm {
   display: flex;
   width: 100%;
-  max-width: 780px;
+  max-width: 860px;
   margin: 0 auto;
   border-radius: 999px;
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.2s ease;
+}
+
+.searchForm:focus-within {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28), 0 0 0 3px rgba(255, 106, 0, 0.35);
 }
 
 .searchDropdown {
@@ -144,8 +148,8 @@
 .searchInput {
   flex: 1;
   border: none;
-  padding: 0.85rem 1.3rem;
-  font-size: 1rem;
+  padding: 1.05rem 1.5rem;
+  font-size: 1.05rem;
   outline: none;
 }
 
@@ -156,7 +160,8 @@
   background: var(--dis-orange);
   color: #fff;
   border: none;
-  padding: 0 1.5rem;
+  padding: 0 1.75rem;
+  transition: background 0.15s ease;
 }
 
 .searchButton:hover {
@@ -350,12 +355,12 @@
   }
 
   .logoBadge {
-    font-size: 1.35rem;
-    padding: 0.32rem 0.6rem;
+    font-size: 1.65rem;
+    padding: 0.36rem 0.7rem;
   }
 
   .logoText {
-    font-size: 1.85rem;
+    font-size: 2.3rem;
   }
 
   .actions {

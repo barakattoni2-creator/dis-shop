@@ -319,8 +319,10 @@
 }
 
 .subtitle {
-  font-size: 1.1rem;
-  line-height: 1.6;
+  font-size: 1.12rem;
+  font-weight: 500;
+  line-height: 1.65;
+  letter-spacing: 0.1px;
   margin-bottom: 1.5rem;
   opacity: 0.95;
 }
