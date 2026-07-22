@@ -119,10 +119,16 @@ export interface PlainBanner {
   subtitle: string | null;
   discount: string | null;
   imageUrl: string | null;
+  mobileImageUrl: string | null;
   linkUrl: string | null;
   bgColor: string | null;
   ctaLabel: string | null;
   order: number;
+  // ISO strings, not Date — this shape is passed through getStaticProps as
+  // page props, which Next.js serializes to JSON (Date objects aren't
+  // JSON-serializable as-is).
+  startDate: string | null;
+  endDate: string | null;
   active: boolean;
 }
 

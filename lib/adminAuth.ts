@@ -85,7 +85,7 @@ function parseCookies(header: string | undefined | null): Record<string, string>
   return cookies;
 }
 
-type AnyReq = IncomingMessage & { headers: Record<string, string | string[] | undefined> };
+export type AnyReq = IncomingMessage & { headers: Record<string, string | string[] | undefined> };
 
 // Works with both API route `req` objects and getServerSideProps' `req`.
 // Returns null for a missing/invalid/tampered cookie, an absolute-expired
@@ -175,7 +175,7 @@ async function logDenied(req: AnyReq, session: AdminSession | null, permission: 
   }
 }
 
-type AnyRes = ServerResponse & {
+export type AnyRes = ServerResponse & {
   status: (code: number) => AnyRes;
   json: (body: unknown) => void;
   setHeader: (name: string, value: string) => void;

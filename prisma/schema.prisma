@@ -306,12 +306,23 @@ model Banner {
   subtitle  String?
   discount  String?
   imageUrl  String?
+  // Optional separate crop/photo for narrow viewports — falls back to
+  // imageUrl on the storefront when unset, so existing banners keep working
+  // unmodified after this field was added.
+  mobileImageUrl String?
   linkUrl   String?
   bgColor   String?
   // Optional per-banner primary-button label (e.g. "Shop Gree ACs") — null
   // falls back to the default "Shop Now" used by every other slide.
   ctaLabel  String?
   order     Int      @default(0)
+  // Scheduling window, both optional. A banner with `active: true` but a
+  // startDate in the future or an endDate in the past is excluded from
+  // fetchActiveBanners() (storefront) but still visible/editable in the
+  // admin list — lets an admin queue up a banner ahead of a sale without it
+  // going live early, and without deleting it once the sale ends.
+  startDate DateTime?
+  endDate   DateTime?
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
