@@ -7,16 +7,17 @@ import StarRating from "@/components/StarRating";
 import Price from "@/components/Price";
 import ProductImage from "@/components/ProductImage";
 import QuickViewModal from "@/components/QuickViewModal";
-import { HeartIcon, CartIcon, ZoomIcon } from "@/components/icons";
+import { HeartIcon, CartIcon, ZoomIcon, CompareIcon } from "@/components/icons";
 import styles from "@/styles/ProductCard.module.css";
 
 export default function ProductCard({ product, onView, onAddToCart }) {
-  const { addToCart, toggleWishlist, isWishlisted } = useStore();
+  const { addToCart, toggleWishlist, isWishlisted, toggleCompare, isCompared } = useStore();
   const { rate } = useExchangeRate();
   const [quickView, setQuickView] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const intervalRef = useRef(null);
   const wishlisted = isWishlisted(product.id);
+  const compared = isCompared(product.id);
   const discount = calcDiscount(product.price, product.originalPrice);
   // Primary photo (product.imageUrl) always comes first; any additional
   // gallery photos follow, deduped — matches "use the primary image, fall
@@ -55,9 +56,11 @@ export default function ProductCard({ product, onView, onAddToCart }) {
     <div className={styles.card}>
       <div className={styles.iconStack}>
         <button
+          type="button"
           className={`${styles.iconBtn} ${wishlisted ? styles.iconBtnActive : ""}`}
           onClick={() => toggleWishlist(product)}
           aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          aria-pressed={wishlisted}
         >
           <HeartIcon filled={wishlisted} />
         </button>
@@ -68,6 +71,15 @@ export default function ProductCard({ product, onView, onAddToCart }) {
           aria-label="Quick view"
         >
           <ZoomIcon />
+        </button>
+        <button
+          type="button"
+          className={`${styles.iconBtn} ${compared ? styles.iconBtnActive : ""}`}
+          onClick={() => toggleCompare(product)}
+          aria-label={compared ? "Remove from compare" : "Add to compare"}
+          aria-pressed={compared}
+        >
+          <CompareIcon />
         </button>
       </div>
 
@@ -136,9 +148,11 @@ export default function ProductCard({ product, onView, onAddToCart }) {
           {inStock ? (lowStock ? `Only ${product.stock} left` : "In Stock") : "Out of Stock"}
         </span>
         <button
+          type="button"
           className={styles.addBtn}
           onClick={handleAddToCart}
           disabled={!inStock}
+          aria-label={inStock ? `Add ${product.name} to cart` : `${product.name} is out of stock`}
         >
           <CartIcon width="16" height="16" /> {inStock ? "Add to Cart" : "Out of Stock"}
         </button>

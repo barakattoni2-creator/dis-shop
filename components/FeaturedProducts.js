@@ -58,7 +58,8 @@ export default function FeaturedProducts({
           <div className={styles.headingRight}>
             {viewAllHref && (
               <Link href={viewAllHref} className={styles.viewAll}>
-                View All →
+                View All Products
+                <ChevronRightIcon width="14" height="14" />
               </Link>
             )}
             {showArrows && (
