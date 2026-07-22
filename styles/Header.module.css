@@ -2,11 +2,25 @@
   color: #fff;
 }
 
+/* Glassmorphic: translucent navy + backdrop blur instead of a flat fill,
+   so page content shows faintly through the bar while scrolling — still
+   reads as the same navy brand color, just layered. Shadow only appears
+   once scrolled (toggled from Header.js), so the bar stays flush with the
+   hero at the very top instead of showing a shadow against nothing. */
 .stickyWrap {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--dis-navy);
+  background: rgba(8, 26, 58, 0.88);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: 0 0 0 rgba(3, 10, 26, 0);
+  transition: box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.stickyWrapScrolled {
+  background: rgba(6, 20, 46, 0.96);
+  box-shadow: 0 8px 24px rgba(3, 10, 26, 0.22);
 }
 
 .mainBar {

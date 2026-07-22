@@ -30,6 +30,24 @@ export default function Header() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [categoryTree, setCategoryTree] = useState([]);
   const [categoryTreeLoading, setCategoryTreeLoading] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
+
+  // rAF-throttled so the listener never runs more than once per frame —
+  // toggling a boolean class is cheap, but the scroll event itself can fire
+  // far faster than the browser can paint.
+  useEffect(() => {
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 8);
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     fetch("/api/search-config")
@@ -65,7 +83,7 @@ export default function Header() {
     <header className={styles.header}>
       <TopBar />
 
-      <div className={styles.stickyWrap}>
+      <div className={`${styles.stickyWrap} ${scrolled ? styles.stickyWrapScrolled : ""}`}>
         <div className={styles.mainBar}>
           <button
             className={styles.menuToggle}
