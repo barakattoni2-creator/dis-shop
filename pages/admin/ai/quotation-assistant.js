@@ -2,7 +2,6 @@ import AdminLayout from "@/features/admin/AdminLayout";
 import AssistantPlaceholder from "@/features/admin/ai/AssistantPlaceholder";
 import { requireAdminPage } from "@/lib/adminAuth";
 import { PERMISSIONS } from "@/data/adminRoles";
-import styles from "@/styles/Admin.module.css";
 
 export async function getServerSideProps({ req, res }) {
   const guard = await requireAdminPage(req, res, PERMISSIONS.MANAGE_AI);
@@ -13,7 +12,7 @@ export async function getServerSideProps({ req, res }) {
 export default function QuotationAssistantPage({ email, role }) {
   return (
     <AdminLayout title="Quotation Assistant" email={email} role={role}>
-      <div className={styles.main}>
+      <div className="shadcn-root">
         <AssistantPlaceholder
           icon="🧾"
           title="Quotation Assistant"

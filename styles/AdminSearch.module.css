@@ -5,7 +5,7 @@
 
 .intro {
   font-size: 0.88rem;
-  color: #565959;
+  color: var(--muted-fg);
   margin-bottom: 1.2rem;
   max-width: 760px;
   line-height: 1.5;
@@ -17,7 +17,7 @@
   border-radius: 8px;
   padding: 0.9rem 1.1rem;
   font-size: 0.85rem;
-  color: #565959;
+  color: var(--muted-fg);
   margin-bottom: 1.5rem;
   line-height: 1.5;
 }
@@ -38,7 +38,7 @@
   padding: 0.5rem 0.9rem;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #565959;
+  color: var(--muted-fg);
   background: transparent;
 }
 
@@ -61,7 +61,7 @@
 /* Card */
 
 .card {
-  background: #fff;
+  background: var(--background);
   border: 1px solid var(--border);
   border-radius: 14px;
   box-shadow: 0 2px 10px rgba(8, 26, 58, 0.05);
@@ -87,7 +87,7 @@
 
 .cardSubtext {
   font-size: 0.82rem;
-  color: #565959;
+  color: var(--muted-fg);
 }
 
 /* Filter / toolbar row */
@@ -132,7 +132,7 @@
 
 .badgeInactive {
   background: #f6f8fc;
-  color: #7a8699;
+  color: var(--muted-fg);
 }
 
 .badgeWarn {
@@ -180,7 +180,7 @@
 }
 
 .btnSecondary {
-  background: #fff;
+  background: var(--background);
   border: 1px solid var(--border);
   color: var(--dis-navy);
 }
@@ -213,14 +213,14 @@
   justify-content: center;
   gap: 0.6rem;
   font-size: 0.85rem;
-  color: #565959;
+  color: var(--muted-fg);
 }
 
 .pagination button {
   border-radius: 6px;
   padding: 0.35rem 0.8rem;
   font-weight: 700;
-  background: #fff;
+  background: var(--background);
   border: 1px solid var(--border);
   color: var(--dis-navy);
 }
@@ -255,7 +255,7 @@
 .statLabel {
   font-size: 0.78rem;
   font-weight: 600;
-  color: #565959;
+  color: var(--muted-fg);
 }
 
 .rankList {
@@ -282,7 +282,7 @@
 
 .rankCount {
   font-weight: 700;
-  color: #7a8699;
+  color: var(--muted-fg);
 }
 
 /* Weight sliders */
@@ -324,7 +324,7 @@
   border-radius: 10px;
   padding: 1.4rem;
   text-align: center;
-  color: #565959;
+  color: var(--muted-fg);
   font-size: 0.85rem;
 }
 
@@ -348,7 +348,7 @@
 }
 
 .empty {
-  color: #565959;
+  color: var(--muted-fg);
   padding: 1.5rem 0;
   text-align: center;
   font-size: 0.88rem;
@@ -375,7 +375,7 @@
 
 .dragHandle {
   cursor: grab;
-  color: #7a8699;
+  color: var(--muted-fg);
   font-weight: 700;
 }
 
