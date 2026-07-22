@@ -108,6 +108,10 @@ export interface PlainBrand {
   id?: string;
   name: string;
   logoUrl: string | null;
+  coverImageUrl?: string | null;
+  description?: string | null;
+  websiteUrl?: string | null;
+  featured?: boolean;
   productCount?: number;
 }
 

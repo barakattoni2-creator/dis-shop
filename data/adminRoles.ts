@@ -95,6 +95,7 @@ export const ROUTE_PERMISSIONS: Record<string, Permission> = {
   "/admin/reports": PERMISSIONS.VIEW_FINANCIALS,
   "/admin/customers": PERMISSIONS.MANAGE_CUSTOMERS,
   "/admin/settings": PERMISSIONS.MANAGE_SETTINGS,
+  "/admin/homepage-builder": PERMISSIONS.MANAGE_SETTINGS,
   "/admin/settings/search": PERMISSIONS.MANAGE_SEARCH,
   "/admin/odoo": PERMISSIONS.MANAGE_ODOO,
   "/admin/users": PERMISSIONS.MANAGE_USERS,

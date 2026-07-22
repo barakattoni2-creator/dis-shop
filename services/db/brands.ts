@@ -4,7 +4,15 @@ import type { Brand } from "@/lib/generated/prisma/client";
 import type { PlainBrand } from "@/types/domain";
 
 function toPlain(row: Brand): PlainBrand {
-  return { id: row.id, name: row.name, logoUrl: row.logoUrl || null };
+  return {
+    id: row.id,
+    name: row.name,
+    logoUrl: row.logoUrl || null,
+    coverImageUrl: row.coverImageUrl || null,
+    description: row.description || null,
+    websiteUrl: row.websiteUrl || null,
+    featured: row.featured,
+  };
 }
 
 export async function fetchBrands(): Promise<PlainBrand[]> {
@@ -18,19 +26,27 @@ export async function fetchBrands(): Promise<PlainBrand[]> {
   return [...staticOnly, ...dbBrands];
 }
 
+type BrandWritable = Pick<
+  Brand,
+  "name" | "logoUrl" | "coverImageUrl" | "description" | "websiteUrl" | "featured"
+>;
+
 export async function createBrand({
   name,
   logoUrl,
-}: {
-  name: string;
-  logoUrl?: string | null;
-}): Promise<PlainBrand> {
+  coverImageUrl,
+  description,
+  websiteUrl,
+  featured,
+}: Partial<BrandWritable> & { name: string }): Promise<PlainBrand> {
   if (!isDbConfigured()) throw new Error("Database not configured.");
-  const row = await prisma!.brand.create({ data: { name, logoUrl } });
+  const row = await prisma!.brand.create({
+    data: { name, logoUrl, coverImageUrl, description, websiteUrl, featured },
+  });
   return toPlain(row);
 }
 
-export async function updateBrand(id: string, patch: Partial<Pick<Brand, "name" | "logoUrl">>): Promise<PlainBrand> {
+export async function updateBrand(id: string, patch: Partial<BrandWritable>): Promise<PlainBrand> {
   if (!isDbConfigured()) throw new Error("Database not configured.");
   const row = await prisma!.brand.update({ where: { id }, data: patch });
   return toPlain(row);

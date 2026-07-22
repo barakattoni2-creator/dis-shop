@@ -8,6 +8,8 @@ import MediaPicker from "@/features/admin/MediaPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -48,9 +50,15 @@ export default function AdminBrandsPage({ email, role, dbConfigured }: AdminBran
   const [deleting, setDeleting] = useState<PlainBrand | null>(null);
   const [name, setName] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
+  const [coverImageUrl, setCoverImageUrl] = useState("");
+  const [description, setDescription] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [featured, setFeatured] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [coverUploading, setCoverUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
+  const [showCoverPicker, setShowCoverPicker] = useState(false);
 
   const reload = () => {
     fetch("/api/admin/brands")
@@ -69,6 +77,10 @@ export default function AdminBrandsPage({ email, role, dbConfigured }: AdminBran
     setEditing(null);
     setName("");
     setLogoUrl("");
+    setCoverImageUrl("");
+    setDescription("");
+    setWebsiteUrl("");
+    setFeatured(false);
     setShowForm(true);
   };
 
@@ -76,27 +88,35 @@ export default function AdminBrandsPage({ email, role, dbConfigured }: AdminBran
     setEditing(b);
     setName(b.name);
     setLogoUrl(b.logoUrl || "");
+    setCoverImageUrl(b.coverImageUrl || "");
+    setDescription(b.description || "");
+    setWebsiteUrl(b.websiteUrl || "");
+    setFeatured(Boolean(b.featured));
     setShowForm(true);
+  };
+
+  const uploadImage = async (file: File): Promise<string> => {
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const res = await fetch("/api/admin/upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: dataUrl }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Upload failed.");
+    return data.url as string;
   };
 
   const handleLogoUpload = async (file: File | undefined) => {
     if (!file) return;
     setUploading(true);
     try {
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: dataUrl }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload failed.");
-      setLogoUrl(data.url);
+      setLogoUrl(await uploadImage(file));
     } catch (err) {
       toast.error((err as Error).message);
     } finally {
@@ -104,20 +124,40 @@ export default function AdminBrandsPage({ email, role, dbConfigured }: AdminBran
     }
   };
 
+  const handleCoverUpload = async (file: File | undefined) => {
+    if (!file) return;
+    setCoverUploading(true);
+    try {
+      setCoverImageUrl(await uploadImage(file));
+    } catch (err) {
+      toast.error((err as Error).message);
+    } finally {
+      setCoverUploading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     try {
+      const payload = {
+        name,
+        logoUrl,
+        coverImageUrl,
+        description,
+        websiteUrl,
+        featured,
+      };
       const res = editing
         ? await fetch(`/api/admin/brands/${editing.id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ logoUrl }),
+            body: JSON.stringify(payload),
           })
         : await fetch("/api/admin/brands", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, logoUrl }),
+            body: JSON.stringify(payload),
           });
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || "Save failed.");
@@ -171,6 +211,7 @@ export default function AdminBrandsPage({ email, role, dbConfigured }: AdminBran
                 <TableRow>
                   <TableHead>Logo</TableHead>
                   <TableHead>Name</TableHead>
+                  <TableHead>Featured</TableHead>
                   <TableHead>Products</TableHead>
                   <TableHead className="w-32" />
                 </TableRow>
@@ -184,6 +225,9 @@ export default function AdminBrandsPage({ email, role, dbConfigured }: AdminBran
                       </div>
                     </TableCell>
                     <TableCell className="font-medium">{b.name}</TableCell>
+                    <TableCell>
+                      {b.featured && <Badge className="bg-amber-500 text-white hover:bg-amber-500">Featured</Badge>}
+                    </TableCell>
                     <TableCell className="text-muted-foreground">{b.productCount ?? "—"}</TableCell>
                     <TableCell>
                       {b.id ? (
@@ -214,7 +258,7 @@ export default function AdminBrandsPage({ email, role, dbConfigured }: AdminBran
       </div>
 
       <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent>
+        <DialogContent className="max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing ? "Edit Brand" : "Add Brand"}</DialogTitle>
           </DialogHeader>
@@ -252,6 +296,67 @@ export default function AdminBrandsPage({ email, role, dbConfigured }: AdminBran
                 placeholder="or paste a logo URL"
               />
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="brand-cover">Cover Image</Label>
+              <div className="flex items-center gap-3">
+                {coverImageUrl && (
+                  <div className="relative h-14 w-24 overflow-hidden rounded-md border bg-muted">
+                    <NextImage src={coverImageUrl} alt="" fill sizes="96px" className="object-cover" />
+                  </div>
+                )}
+                <Button type="button" variant="outline" size="sm" asChild>
+                  <label className="cursor-pointer">
+                    {coverUploading ? "Uploading…" : "Upload Cover"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleCoverUpload(e.target.files?.[0])}
+                    />
+                  </label>
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => setShowCoverPicker(true)}>
+                  Choose from Library
+                </Button>
+              </div>
+              <Input
+                value={coverImageUrl}
+                onChange={(e) => setCoverImageUrl(e.target.value)}
+                placeholder="or paste a cover image URL"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="brand-description">Description</Label>
+              <Textarea
+                id="brand-description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={3}
+                placeholder="Short description of this brand…"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="brand-website">Website</Label>
+              <Input
+                id="brand-website"
+                type="url"
+                value={websiteUrl}
+                onChange={(e) => setWebsiteUrl(e.target.value)}
+                placeholder="https://example.com"
+              />
+            </div>
+
+            <div className="flex items-center justify-between rounded-md border p-3">
+              <div>
+                <Label htmlFor="brand-featured">Featured</Label>
+                <p className="text-xs text-muted-foreground">Highlight this brand across the storefront.</p>
+              </div>
+              <Switch id="brand-featured" checked={featured} onCheckedChange={setFeatured} />
+            </div>
+
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
                 Cancel
@@ -288,6 +393,17 @@ export default function AdminBrandsPage({ email, role, dbConfigured }: AdminBran
           onChoose={(asset) => {
             setLogoUrl(asset.url);
             setShowPicker(false);
+          }}
+        />
+      )}
+
+      {showCoverPicker && (
+        <MediaPicker
+          defaultFolder="Brands"
+          onClose={() => setShowCoverPicker(false)}
+          onChoose={(asset) => {
+            setCoverImageUrl(asset.url);
+            setShowCoverPicker(false);
           }}
         />
       )}

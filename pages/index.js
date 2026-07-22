@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Layout from "@/components/Layout";
 import HeroBanner from "@/components/HeroBanner";
 import FeatureBar from "@/components/FeatureBar";
@@ -15,6 +16,8 @@ import DeliveryInfo from "@/components/DeliveryInfo";
 import Newsletter from "@/components/Newsletter";
 import Reveal from "@/components/Reveal";
 import { fetchProducts, fetchBanners, fetchHomepageCategoryList, fetchBrands } from "@/lib/catalog";
+import { fetchSettings } from "@/services/db/settings";
+import { HOMEPAGE_SECTIONS_SETTING_KEY, parseHomepageSectionState } from "@/data/homepageSections";
 import { calcDiscount } from "@/utils/format";
 import styles from "@/styles/Home.module.css";
 
@@ -23,13 +26,15 @@ export async function getStaticProps() {
   // transient P1001 here must not crash the homepage or fall back to a
   // stale/wrong layout. Empty arrays degrade gracefully — every section
   // below already has its own empty state — and the next revalidate retries.
-  const [products, banners, categories, brands] = await Promise.all([
+  const [products, banners, categories, brands, settings] = await Promise.all([
     fetchProducts().catch(() => []),
     fetchBanners().catch(() => []),
     fetchHomepageCategoryList().catch(() => []),
     fetchBrands().catch(() => []),
+    fetchSettings().catch(() => ({})),
   ]);
-  return { props: { products, banners, categories, brands }, revalidate: 60 };
+  const sectionState = parseHomepageSectionState(settings[HOMEPAGE_SECTIONS_SETTING_KEY]);
+  return { props: { products, banners, categories, brands, sectionState }, revalidate: 60 };
 }
 
 // A "valid deal" requires real price data proving an actual discount, and
@@ -48,7 +53,7 @@ function isValidDeal(p) {
 // reasonable number" requirement.
 const SECTION_LIMIT = 10;
 
-export default function Home({ products, banners, categories, brands }) {
+export default function Home({ products, banners, categories, brands, sectionState }) {
   const bestSellers = products.filter((p) => p.badge === "Best Seller").slice(0, SECTION_LIMIT);
   const flashDeals = products
     .filter((p) => p.badge === "Deal" && isValidDeal(p))
@@ -74,51 +79,65 @@ export default function Home({ products, banners, categories, brands }) {
     .filter(hasPhoto)
     .slice(0, 6);
 
-  return (
-    <Layout
-      title="Everything you need, delivered fast"
-      description="DIS Shop: your one-stop shop in Juba, South Sudan for air conditioners, solar equipment, tools, household appliances, electrical supplies and lighting."
-    >
-      <HeroBanner banners={banners} products={heroProducts} />
-
-      <FeatureBar />
-
-      <Reveal>
-        <Categories products={products} categories={categories} />
-      </Reveal>
-
-      <Reveal id="flash-deals">
-        <FlashDeals
-          products={flashDeals}
-          subtitle="Limited-time offers on selected products."
-          viewAllHref="/shop"
-        />
-      </Reveal>
-
-      {todaysDeals.length > 0 && (
-        <div className={styles.sectionAlt}>
-          <Reveal id="todays-deals">
-            <FeaturedProducts
-              products={todaysDeals}
-              heading="Today's Deals"
-              subtitle="Biggest discounts right now"
-              viewAllHref="/shop"
-              layout="slider"
-            />
-          </Reveal>
-        </div>
-      )}
-
-      <Reveal>
-        <FeaturedProducts
-          products={featured}
-          heading="Featured Products"
-          subtitle="Popular products selected for you."
-          viewAllHref="/shop"
-        />
-      </Reveal>
-
-      <div className={styles.sectionAlt}>
+  // Every homepage section below Hero and above Newsletter is admin-
+  // configurable (order + on/off) via the Homepage Builder — see
+  // data/homepageSections.ts. `alt` mirrors the section's original,
+  // fixed background-band assignment so the default layout renders
+  // pixel-identical to before; it travels with the section if reordered,
+  // rather than being recomputed from final position.
+  const sectionRegistry = {
+    featureBar: { alt: false, node: <FeatureBar /> },
+    categories: {
+      alt: false,
+      node: (
+        <Reveal>
+          <Categories products={products} categories={categories} />
+        </Reveal>
+      ),
+    },
+    flashDeals: {
+      alt: false,
+      node: (
+        <Reveal id="flash-deals">
+          <FlashDeals
+            products={flashDeals}
+            subtitle="Limited-time offers on selected products."
+            viewAllHref="/shop"
+          />
+        </Reveal>
+      ),
+    },
+    todaysDeals: {
+      alt: true,
+      visible: todaysDeals.length > 0,
+      node: (
+        <Reveal id="todays-deals">
+          <FeaturedProducts
+            products={todaysDeals}
+            heading="Today's Deals"
+            subtitle="Biggest discounts right now"
+            viewAllHref="/shop"
+            layout="slider"
+          />
+        </Reveal>
+      ),
+    },
+    featuredProducts: {
+      alt: false,
+      node: (
+        <Reveal>
+          <FeaturedProducts
+            products={featured}
+            heading="Featured Products"
+            subtitle="Popular products selected for you."
+            viewAllHref="/shop"
+          />
+        </Reveal>
+      ),
+    },
+    newArrivals: {
+      alt: true,
+      node: (
         <Reveal id="new-arrivals">
           <FeaturedProducts
             products={newArrivals}
@@ -128,79 +147,132 @@ export default function Home({ products, banners, categories, brands }) {
             layout="slider"
           />
         </Reveal>
-      </div>
-
-      <Reveal>
-        <FeaturedProducts
-          products={bestSellers}
-          heading="Best Sellers"
-          subtitle="Popular picks from DIS Shop"
-          viewAllHref="/shop"
-          layout="slider"
-        />
-      </Reveal>
-
-      <div className={styles.sectionAlt}>
+      ),
+    },
+    bestSellers: {
+      alt: false,
+      node: (
+        <Reveal>
+          <FeaturedProducts
+            products={bestSellers}
+            heading="Best Sellers"
+            subtitle="Popular picks from DIS Shop"
+            viewAllHref="/shop"
+            layout="slider"
+          />
+        </Reveal>
+      ),
+    },
+    specialOffers: {
+      alt: true,
+      node: (
         <Reveal id="special-offers">
           <SpecialOffers />
         </Reveal>
-      </div>
-
-      <Reveal>
-        <PromoBanner
-          eyebrow="Order Your Way"
-          title="Prefer to Order by Chat?"
-          subtitle="Message us on WhatsApp and our team will help you order, track delivery and answer questions in minutes."
-          cta="Chat on WhatsApp"
-          href="/contact"
-          bg="linear-gradient(120deg, #0a4dff, #081a3a)"
-          icon="💬"
-        />
-      </Reveal>
-
-      <div className={styles.sectionAlt}>
+      ),
+    },
+    promoWhatsApp: {
+      alt: false,
+      node: (
+        <Reveal>
+          <PromoBanner
+            eyebrow="Order Your Way"
+            title="Prefer to Order by Chat?"
+            subtitle="Message us on WhatsApp and our team will help you order, track delivery and answer questions in minutes."
+            cta="Chat on WhatsApp"
+            href="/contact"
+            bg="linear-gradient(120deg, #0a4dff, #081a3a)"
+            icon="💬"
+          />
+        </Reveal>
+      ),
+    },
+    brands: {
+      alt: true,
+      node: (
         <Reveal id="top-brands">
           <Brands brands={brands} />
         </Reveal>
-      </div>
-
-      <Reveal>
-        <RecentlyViewed products={products} />
-      </Reveal>
-
-      <div className={styles.sectionAlt}>
+      ),
+    },
+    recentlyViewed: {
+      alt: false,
+      node: (
+        <Reveal>
+          <RecentlyViewed products={products} />
+        </Reveal>
+      ),
+    },
+    recommendedForYou: {
+      alt: true,
+      node: (
         <Reveal>
           <RecommendedForYou products={products} />
         </Reveal>
-      </div>
-
-      <Reveal>
-        <PromoBanner
-          eyebrow="Power Independence"
-          title="Never Lose Power Again"
-          subtitle="Felicity & Deye solar panels, inverters and batteries — keep your home running even when the grid isn't."
-          cta="Shop Solar"
-          href="/category/solar"
-          bg="linear-gradient(120deg, #ff6a00, #cc5500)"
-          icon="☀️"
-        />
-      </Reveal>
-
-      <div className={styles.sectionAlt}>
+      ),
+    },
+    promoSolar: {
+      alt: false,
+      node: (
+        <Reveal>
+          <PromoBanner
+            eyebrow="Power Independence"
+            title="Never Lose Power Again"
+            subtitle="Felicity & Deye solar panels, inverters and batteries — keep your home running even when the grid isn't."
+            cta="Shop Solar"
+            href="/category/solar"
+            bg="linear-gradient(120deg, #ff6a00, #cc5500)"
+            icon="☀️"
+          />
+        </Reveal>
+      ),
+    },
+    whyChooseUs: {
+      alt: true,
+      node: (
         <Reveal>
           <WhyChooseUs heading="Why Choose DIS" />
         </Reveal>
-      </div>
-
-      <Reveal>
-        <DeliveryInfo />
-      </Reveal>
-
-      <div className={styles.sectionAlt}>
+      ),
+    },
+    deliveryInfo: {
+      alt: false,
+      node: (
+        <Reveal>
+          <DeliveryInfo />
+        </Reveal>
+      ),
+    },
+    customerReviews: {
+      alt: true,
+      node: (
         <Reveal>
           <CustomerReviews />
         </Reveal>
-      </div>
+      ),
+    },
+  };
+
+  return (
+    <Layout
+      title="Everything you need, delivered fast"
+      description="DIS Shop: your one-stop shop in Juba, South Sudan for air conditioners, solar equipment, tools, household appliances, electrical supplies and lighting."
+    >
+      <HeroBanner banners={banners} products={heroProducts} />
+
+      {sectionState
+        .filter((s) => s.enabled)
+        .map((s) => ({ id: s.id, entry: sectionRegistry[s.id] }))
+        .filter(({ entry }) => entry && entry.visible !== false)
+        .map(({ id, entry }) =>
+          entry.alt ? (
+            <div key={id} className={styles.sectionAlt}>
+              {entry.node}
+            </div>
+          ) : (
+            <Fragment key={id}>{entry.node}</Fragment>
+          )
+        )}
 
       <Newsletter />
     </Layout>

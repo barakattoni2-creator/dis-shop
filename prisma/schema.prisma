@@ -89,12 +89,16 @@ model CategoryRedirect {
 }
 
 model Brand {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  logoUrl   String?
-  products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id             String    @id @default(cuid())
+  name           String    @unique
+  logoUrl        String?
+  coverImageUrl  String?
+  description    String?
+  websiteUrl     String?
+  featured       Boolean   @default(false)
+  products       Product[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 // DRAFT/ARCHIVED are hidden from every storefront-facing query

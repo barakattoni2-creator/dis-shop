@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { href: "/admin/brands", label: "Brands", icon: "🏷️" },
   { href: "/admin/banners", label: "Banners", icon: "🖼️" },
   { href: "/admin/media", label: "Media Library", icon: "📷" },
+  { href: "/admin/homepage-builder", label: "Homepage Builder", icon: "🏠" },
   { href: "/admin/orders", label: "Orders", icon: "🧾" },
   { href: "/admin/deliveries", label: "Deliveries", icon: "🚚" },
   { href: "/admin/customers", label: "Customers", icon: "👥" },
