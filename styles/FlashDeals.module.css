@@ -18,8 +18,10 @@
 }
 
 .heading {
-  font-size: 1.6rem;
+  font-size: 1.85rem;
   font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
   color: var(--dis-orange-dark);
 }
 
@@ -36,14 +38,31 @@
 }
 
 .viewAll {
-  font-size: 0.88rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border: 1.5px solid var(--dis-orange-dark);
+  border-radius: 999px;
+  font-size: 0.82rem;
   font-weight: 700;
   color: var(--dis-orange-dark);
   white-space: nowrap;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.viewAll svg {
+  transition: transform 0.2s ease;
 }
 
 .viewAll:hover {
-  color: var(--dis-navy);
+  background: var(--dis-orange-dark);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.viewAll:hover svg {
+  transform: translateX(3px);
 }
 
 .timer {
@@ -111,7 +130,7 @@
   }
 
   .heading {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
   }
 
   .subtitle {
@@ -119,7 +138,12 @@
   }
 
   .headingRight {
-    gap: 0.6rem;
+    gap: 0.5rem;
+  }
+
+  .viewAll {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.74rem;
   }
 
   .arrows {

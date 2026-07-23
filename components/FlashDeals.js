@@ -52,7 +52,8 @@ export default function FlashDeals({ products, subtitle, viewAllHref }) {
           )}
           {viewAllHref && (
             <Link href={viewAllHref} className={styles.viewAll}>
-              View All →
+              View All Deals
+              <ChevronRightIcon width="14" height="14" />
             </Link>
           )}
           {hasOverflow && (
