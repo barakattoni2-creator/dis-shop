@@ -58,6 +58,30 @@
   object-position: 60% center;
 }
 
+/* Slow Ken Burns zoom on whichever slide is currently active — Swiper
+   attaches swiper-slide-active itself, so this needs no extra JS state.
+   Purely additive motion on top of the crossfade transition above; the
+   image never exceeds its container since .bannerSlide/.bannerHero both
+   clip overflow. */
+.bannerSlide:global(.swiper-slide-active) .bannerImage {
+  animation: kenBurns 7s ease-out forwards;
+}
+
+@keyframes kenBurns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bannerSlide:global(.swiper-slide-active) .bannerImage {
+    animation: none;
+  }
+}
+
 .productSlide {
   position: relative;
   height: 100%;

@@ -57,14 +57,45 @@
   gap: 0.5rem;
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 22px;
+  border-radius: 20px;
   padding: 1.5rem 1.25rem 1.6rem;
   text-align: center;
   box-shadow: 0 6px 18px rgba(8, 26, 58, 0.07);
   overflow: hidden;
+  opacity: 0;
   transition: box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease,
     background 0.3s ease;
+}
+
+/* Staggered entrance once the grid scrolls into view — a plain CSS
+   animation (not a transition-delay on .card itself) so it never bleeds
+   into the hover transitions above; --cat-i is set per-card in
+   Categories.js. */
+.gridInView .card {
+  animation: categoryCardIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--cat-i, 0) * 70ms);
+}
+
+@keyframes categoryCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    opacity: 1;
+  }
+
+  .gridInView .card {
+    animation: none;
+  }
 }
 
 .card:hover {

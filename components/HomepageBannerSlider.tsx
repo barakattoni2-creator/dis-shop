@@ -2,11 +2,12 @@ import { useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay, A11y, Keyboard } from "swiper/modules";
+import { Navigation, Pagination, Autoplay, EffectFade, A11y, Keyboard } from "swiper/modules";
 import type { Swiper as SwiperInstance } from "swiper";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "swiper/css/effect-fade";
 import { buildBannerOverlayGradient } from "@/lib/bannerOverlay";
 import { ChevronLeftIcon, ChevronRightIcon, CheckIcon, TruckIcon, ShieldIcon } from "@/components/icons";
 import styles from "@/styles/HeroBanner.module.css";
@@ -103,8 +104,13 @@ export default function HomepageBannerSlider({ banners }: HomepageBannerSliderPr
   };
 
   const swiperCommonProps = {
-    modules: [Navigation, Pagination, Autoplay, A11y, Keyboard],
+    modules: [Navigation, Pagination, Autoplay, EffectFade, A11y, Keyboard],
     loop: slideCount > 1,
+    // Crossfade instead of the default slide-left/right — reads as more
+    // luxury/editorial (Apple-style) than a hard slide transition.
+    effect: "fade" as const,
+    fadeEffect: { crossFade: true },
+    speed: 800,
     autoplay:
       slideCount > 1
         ? { delay: AUTOPLAY_MS, disableOnInteraction: false, pauseOnMouseEnter: true }

@@ -1,11 +1,12 @@
 import { useRef, useState } from "react";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay, A11y, Keyboard } from "swiper/modules";
+import { Navigation, Pagination, Autoplay, EffectFade, A11y, Keyboard } from "swiper/modules";
 import type { Swiper as SwiperInstance } from "swiper";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "swiper/css/effect-fade";
 import ProductImage from "@/components/ProductImage";
 import { calcDiscount } from "@/utils/format";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
@@ -185,8 +186,11 @@ export default function HeroBanner({ products = [] }: HeroBannerProps) {
   }
 
   const swiperCommonProps = {
-    modules: [Navigation, Pagination, Autoplay, A11y, Keyboard],
+    modules: [Navigation, Pagination, Autoplay, EffectFade, A11y, Keyboard],
     loop: slideCount > 1,
+    effect: "fade" as const,
+    fadeEffect: { crossFade: true },
+    speed: 800,
     autoplay:
       slideCount > 1
         ? { delay: AUTOPLAY_MS, disableOnInteraction: false, pauseOnMouseEnter: true }

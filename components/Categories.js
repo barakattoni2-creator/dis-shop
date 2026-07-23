@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronRightIcon } from "@/components/icons";
 import { CATEGORY_ILLUSTRATIONS } from "@/components/categoryIllustrations";
+import { useInView } from "@/hooks/useInView";
 import styles from "@/styles/Categories.module.css";
 
 // Cycled per-category so the grid reads as colorful tiles rather than one
@@ -23,6 +24,7 @@ const TILE_COLORS = [
 // `categories` is admin-curated (Category.showOnHomepage), not derived from
 // which categories happen to have products — see pages/admin/categories.js.
 export default function Categories({ products = [], categories = [] }) {
+  const [gridRef, gridInView] = useInView();
   const imageByCategory = {};
   products.forEach((p) => {
     const photo = p.imageUrl || p.images?.[0];
@@ -41,12 +43,20 @@ export default function Categories({ products = [], categories = [] }) {
           View All Categories →
         </Link>
       </div>
-      <div className={styles.grid}>
+      <div
+        className={`${styles.grid} ${gridInView ? styles.gridInView : ""}`}
+        ref={gridRef}
+      >
         {categories.map((cat, i) => {
           const image = cat.imageUrl || imageByCategory[cat.slug];
           const Illustration = CATEGORY_ILLUSTRATIONS[cat.slug];
           return (
-            <Link key={cat.slug} href={`/category/${cat.slug}`} className={styles.card}>
+            <Link
+              key={cat.slug}
+              href={`/category/${cat.slug}`}
+              className={styles.card}
+              style={{ "--cat-i": i % 8 }}
+            >
               <span
                 className={styles.imageStage}
                 style={{ background: TILE_COLORS[i % TILE_COLORS.length] }}

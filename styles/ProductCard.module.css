@@ -5,7 +5,7 @@
   height: 100%;
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 6px 18px rgba(8, 26, 58, 0.07);
   transition: box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
@@ -77,6 +77,9 @@
   border-color: var(--dis-orange);
 }
 
+/* Soft radial "studio stage" instead of a flat fill — most product photos
+   have transparent/white backgrounds, so this reads as gentle ambient
+   light behind the product rather than a plain gray tile. */
 .imageWrap {
   position: relative;
   aspect-ratio: 1 / 1;
@@ -84,7 +87,23 @@
   box-sizing: border-box;
   display: block;
   overflow: hidden;
-  background: #f7f9fc;
+  background: radial-gradient(circle at 50% 42%, #ffffff 0%, #f4f7fb 62%, #eef2f8 100%);
+}
+
+/* Soft contact shadow grounding the product, independent of ProductImage's
+   own internal layers so it doesn't affect the image component's other
+   call sites (cart, checkout, compare, etc.). ::before (not ::after) so it
+   paints underneath the real image content instead of over it. */
+.imageWrap::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  width: 55%;
+  height: 14%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(8, 26, 58, 0.14) 0%, transparent 72%);
+  pointer-events: none;
 }
 
 /* Labeled overlay, separate from the small icon-stack zoom button — slides
