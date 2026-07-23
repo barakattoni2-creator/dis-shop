@@ -376,16 +376,30 @@
   }
 
   .logoBadge {
-    font-size: 1.5rem;
-    padding: 0.32rem 0.6rem;
+    font-size: 1.25rem;
+    padding: 0.28rem 0.55rem;
+    border-radius: 6px;
   }
 
   .logoText {
-    font-size: 2.05rem;
+    font-size: 1.7rem;
   }
 
   .searchForm {
     max-width: none;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.16);
+  }
+
+  /* Sized down from the desktop input so the bar reads as properly fitted
+     to a phone screen rather than an oversized desktop control dropped
+     into a narrow row. */
+  .searchInput {
+    padding: 0.75rem 1rem;
+    font-size: 0.88rem;
+  }
+
+  .searchButton {
+    padding: 0 1.1rem;
   }
 
   .actionText {
@@ -399,15 +413,24 @@
 
 @media (max-width: 400px) {
   .logoBadge {
-    font-size: 1.3rem;
-    padding: 0.28rem 0.5rem;
+    font-size: 1.05rem;
+    padding: 0.24rem 0.45rem;
   }
 
   .logoText {
-    font-size: 1.75rem;
+    font-size: 1.45rem;
   }
 
   .actions {
     gap: 0.15rem;
+  }
+
+  .searchInput {
+    padding: 0.7rem 0.85rem;
+    font-size: 0.85rem;
+  }
+
+  .searchButton {
+    padding: 0 0.9rem;
   }
 }

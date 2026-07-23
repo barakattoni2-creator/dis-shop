@@ -180,15 +180,16 @@
   }
 }
 
-/* Phone tier — 220-280px banner height (real device widths tested against:
-   iPhone SE/13/14/15, Samsung S23, all well under 600px). Content is
-   trimmed, not just shrunk: the trust row is dropped (least essential,
-   wouldn't fit in this little vertical room) and both title and subtitle
-   are hard line-clamped so a long admin-entered banner title can never
-   push the CTA row out of the fixed-height section or overflow it. */
+/* Phone tier — compact but unhurried: enough height (340px) to fit a
+   3-line description and the trust row with real breathing room, rather
+   than the previous, tighter 260px that forced hiding the trust row
+   entirely. Title/subtitle are still hard line-clamped so a long
+   admin-entered banner can never overflow the fixed-height section.
+   Arrows move off the vertically-centered content band entirely (down to
+   the bottom edge, beside the dots) instead of overlapping it. */
 @media (max-width: 600px) {
   .bannerHero {
-    height: 260px;
+    height: 340px;
   }
 
   .bannerContentWrap {
@@ -206,9 +207,9 @@
   }
 
   .bannerTitle {
-    font-size: 1.15rem;
-    line-height: 1.25;
-    margin-bottom: 0.4rem;
+    font-size: 1.2rem;
+    line-height: 1.28;
+    margin-bottom: 0.45rem;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -216,50 +217,72 @@
   }
 
   .bannerSubtitle {
-    font-size: 0.78rem;
-    line-height: 1.4;
-    margin-bottom: 0.65rem;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    margin-bottom: 0.9rem;
     max-width: 100%;
     display: -webkit-box;
-    -webkit-line-clamp: 1;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
 
   .bannerHero .ctaRow {
     flex-wrap: nowrap;
-    gap: 0.5rem;
+    align-items: center;
+    gap: 0.6rem;
   }
 
-  .bannerHero .ctaPrimary,
+  /* Primary keeps a real tap target; secondary ("View Products") is
+     deliberately shorter/lighter — matching the desktop hierarchy where
+     it already reads as the quieter of the two actions. */
+  .bannerHero .ctaPrimary {
+    padding: 0.7rem 1.25rem;
+    font-size: 0.85rem;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+
   .bannerHero .ctaSecondary {
-    padding: 0.55rem 0.9rem;
-    font-size: 0.78rem;
+    padding: 0.42rem 0.9rem;
+    font-size: 0.76rem;
     border-radius: 8px;
     white-space: nowrap;
   }
 
-  /* Decorative trust badges are the first thing to go at this height —
-     title, subtitle and the buttons are what actually need the room. */
   .bannerHero .trustRow {
-    display: none;
+    margin-top: 0.9rem;
+    gap: 0.5rem 0.8rem;
   }
 
+  .bannerHero .trustRow span {
+    font-size: 0.66rem;
+  }
+
+  /* Off the vertically-centered content band and down to the bottom edge,
+     grouped with the dots rather than floating mid-banner over the text. */
   .bannerHero .arrow {
-    width: 28px;
-    height: 28px;
+    top: auto;
+    bottom: 0.65rem;
+    transform: none;
+    width: 40px;
+    height: 40px;
+  }
+
+  .bannerHero .arrow:hover {
+    transform: scale(1.06);
   }
 
   .bannerHero .arrowPrev {
-    left: 0.4rem;
+    left: 0.6rem;
   }
 
   .bannerHero .arrowNext {
-    right: 0.4rem;
+    right: 0.6rem;
   }
 
   .bannerHero .dots {
-    bottom: 0.6rem;
+    bottom: 0.95rem;
   }
 
   .bannerHero .dot {
