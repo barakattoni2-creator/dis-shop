@@ -24,6 +24,48 @@ import MediaPicker from "@/features/admin/MediaPicker";
 import type { ProductFormValues } from "@/features/admin/products/types";
 import type { PlainMediaAsset } from "@/types/domain";
 
+// Large photos straight off a phone camera are routinely 4-8MB — re-encoding
+// them client-side before they ever hit the network cuts upload time and
+// Cloudinary storage without a visible quality loss at the sizes product
+// photos are actually displayed at. Small/already-light files (below the
+// threshold) and non-photo formats (SVG, GIF — animation would be lost by
+// flattening to a static canvas frame) pass through untouched.
+const MAX_DIMENSION_PX = 1920;
+const JPEG_QUALITY = 0.82;
+const COMPRESS_THRESHOLD_BYTES = 500 * 1024;
+
+async function compressImage(file: File): Promise<File> {
+  if (!file.type.startsWith("image/") || file.type === "image/svg+xml" || file.type === "image/gif") {
+    return file;
+  }
+  if (file.size <= COMPRESS_THRESHOLD_BYTES) return file;
+
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, MAX_DIMENSION_PX / Math.max(bitmap.width, bitmap.height));
+    const width = Math.round(bitmap.width * scale);
+    const height = Math.round(bitmap.height * scale);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, width, height);
+    bitmap.close();
+
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", JPEG_QUALITY));
+    // Only use the compressed version if it's actually smaller — a already-
+    // efficiently-encoded PNG/WebP can lose that race against a re-encode.
+    if (!blob || blob.size >= file.size) return file;
+    return new File([blob], file.name.replace(/\.\w+$/, ".jpg"), { type: "image/jpeg" });
+  } catch {
+    // createImageBitmap/canvas support is universal in evergreen browsers,
+    // but never let a compression failure block the actual upload.
+    return file;
+  }
+}
+
 async function fileToUpload(file: File, endpoint: string, extraBody: Record<string, string> = {}): Promise<string> {
   const dataUrl = await new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
@@ -130,7 +172,8 @@ export default function MediaSection({ form, setForm }: MediaSectionProps) {
     try {
       const uploaded: string[] = [];
       for (const file of Array.from(files)) {
-        uploaded.push(await fileToUpload(file, "/api/admin/upload"));
+        const compressed = await compressImage(file);
+        uploaded.push(await fileToUpload(compressed, "/api/admin/upload"));
       }
       setImages([...images, ...uploaded]);
     } catch (err) {
@@ -150,7 +193,7 @@ export default function MediaSection({ form, setForm }: MediaSectionProps) {
     try {
       let url: string;
       if (field === "mobileImageUrl") {
-        url = await fileToUpload(file, "/api/admin/upload");
+        url = await fileToUpload(await compressImage(file), "/api/admin/upload");
       } else {
         const type = field === "videoUrl" ? "video" : "raw";
         url = await fileToUpload(file, "/api/admin/upload-file", { type });
@@ -212,7 +255,7 @@ export default function MediaSection({ form, setForm }: MediaSectionProps) {
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
             Drag to reorder. The first image is the storefront cover — drag one to the front or click &ldquo;Set
-            as cover&rdquo;.
+            as cover&rdquo;. Large photos are automatically compressed before upload.
           </p>
         </CardContent>
       </Card>
