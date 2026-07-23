@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import Layout from "@/components/Layout";
 import HeroBanner from "@/components/HeroBanner";
+import HomepageBannerSlider from "@/components/HomepageBannerSlider";
 import FeatureBar from "@/components/FeatureBar";
 import Categories from "@/components/Categories";
 import FeaturedProducts from "@/components/FeaturedProducts";
@@ -91,6 +92,7 @@ export default function Home({ products, banners, categories, brands, sectionSta
   const heroProducts = (featuredFull.some(hasPhoto) ? featuredFull : products)
     .filter(hasPhoto)
     .slice(0, 6);
+  const activeBanners = banners.filter((b) => b.imageUrl);
 
   // Every homepage section below Hero and above Newsletter is admin-
   // configurable (order + on/off) via the Homepage Builder — see
@@ -271,7 +273,11 @@ export default function Home({ products, banners, categories, brands, sectionSta
       title="Everything you need, delivered fast"
       description="DIS Shop: your one-stop shop in Juba, South Sudan for air conditioners, solar equipment, tools, household appliances, electrical supplies and lighting."
     >
-      <HeroBanner banners={banners} products={heroProducts} />
+      {activeBanners.length > 0 ? (
+        <HomepageBannerSlider banners={activeBanners} />
+      ) : (
+        <HeroBanner products={heroProducts} />
+      )}
 
       {sectionState
         .filter((s) => s.enabled)

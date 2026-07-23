@@ -1,6 +1,5 @@
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay, A11y, Keyboard } from "swiper/modules";
 import type { Swiper as SwiperInstance } from "swiper";
@@ -9,10 +8,9 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import ProductImage from "@/components/ProductImage";
 import { calcDiscount } from "@/utils/format";
-import { buildBannerOverlayGradient } from "@/lib/bannerOverlay";
-import { ChevronLeftIcon, ChevronRightIcon, CheckIcon, TruckIcon, ShieldIcon } from "@/components/icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
 import styles from "@/styles/HeroBanner.module.css";
-import type { PlainBanner, PlainProduct } from "@/types/domain";
+import type { PlainProduct } from "@/types/domain";
 
 // Two-stop navy → blue diagonal with a single soft accent glow — fewer
 // gradient stops than before reads as smoother/more premium, and DIS Shop's
@@ -27,7 +25,6 @@ const SLIDE_BACKGROUNDS = [
 
 const AUTOPLAY_MS = 5000;
 const MAX_SPEC_BADGES = 3;
-const MOBILE_BREAKPOINT_PX = 600;
 
 // Cloudinary's AI background-removal add-on is enabled on this account
 // (verified directly against the live asset) — this strips the product
@@ -96,39 +93,6 @@ function deriveSubtitle(description: string | null | undefined): string {
   return line.length > 100 ? `${line.slice(0, 100)}…` : line;
 }
 
-// Tracks the viewport against MOBILE_BREAKPOINT_PX so a banner slide can
-// pick its mobileImageUrl instead of imageUrl — deliberately NOT done via
-// CSS (e.g. rendering both images and hiding one with display:none), which
-// would still make the browser fetch both over the network. Built on
-// useSyncExternalStore rather than useState+useEffect: getServerSnapshot
-// always returns `false` (desktop) so SSR output and the first client paint
-// match exactly — no hydration-mismatch warning — and React itself (not a
-// manual effect) re-renders once the real viewport is known post-hydration.
-function useIsMobileViewport(breakpoint = MOBILE_BREAKPOINT_PX): boolean {
-  const subscribe = (onChange: () => void) => {
-    const mql = window.matchMedia(`(max-width: ${breakpoint}px)`);
-    mql.addEventListener("change", onChange);
-    return () => mql.removeEventListener("change", onChange);
-  };
-  const getSnapshot = () => window.matchMedia(`(max-width: ${breakpoint}px)`).matches;
-  const getServerSnapshot = () => false;
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-}
-
-interface BannerSlide {
-  key: string;
-  eyebrow: string;
-  title: string;
-  subtitle: string;
-  href: string;
-  ctaLabel: string;
-  image: string;
-  mobileImage: string;
-  overlayOpacity: number;
-  textAlign: "left" | "center" | "right";
-  openInNewTab: boolean;
-}
-
 interface ProductSlide {
   key: string;
   eyebrow: string;
@@ -142,68 +106,40 @@ interface ProductSlide {
 }
 
 interface HeroBannerProps {
-  banners: PlainBanner[];
   products?: PlainProduct[];
 }
 
-// The hero only ever shows real photography — admin-uploaded banners first,
-// then featured products that actually have a photo. If neither exists yet
-// (e.g. a brand-new store with no images uploaded), it shows a plain
-// branded welcome panel instead of an empty image box or an icon
+// Fallback hero shown whenever there are no active, image-bearing homepage
+// banners (see components/HomepageBannerSlider.tsx, which pages/index.js
+// renders instead when banners exist) — featured products that actually
+// have a photo, or a plain branded welcome panel if even that doesn't exist
+// yet (e.g. a brand-new store with nothing uploaded). Never an emoji/icon
 // placeholder standing in for a missing photo.
-//
-// An admin-uploaded banner is a full lifestyle/collage photo meant to run
-// full-bleed behind the text (see .bannerHero below); a product photo is a
-// small isolated cutout meant to float in its own glow (see .stageCard).
-// These need genuinely different markup, so banner mode branches out to its
-// own return before the product-fallback layout further down.
-export default function HeroBanner({ banners, products = [] }: HeroBannerProps) {
+export default function HeroBanner({ products = [] }: HeroBannerProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const swiperRef = useRef<SwiperInstance | null>(null);
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
   const paginationRef = useRef<HTMLDivElement>(null);
-  const isMobile = useIsMobileViewport();
 
-  const realBanners = (banners || []).filter((b) => b.imageUrl);
-  const isBannerMode = realBanners.length > 0;
+  const productSlides: ProductSlide[] = products
+    .filter((p) => p.imageUrl || p.images?.[0])
+    .map((p, i) => {
+      const discount = calcDiscount(p.price, p.originalPrice);
+      return {
+        key: p.id,
+        eyebrow: p.brand || "Featured",
+        title: p.name,
+        subtitle: deriveSubtitle(p.description),
+        specBadges: deriveSpecBadges(p.description),
+        discount: discount > 0 ? `${discount}% OFF` : "",
+        href: `/product/${p.id}`,
+        bg: SLIDE_BACKGROUNDS[i % SLIDE_BACKGROUNDS.length],
+        image: withTransparentBackground(p.imageUrl || p.images?.[0]),
+      };
+    });
 
-  const bannerSlides: BannerSlide[] = isBannerMode
-    ? realBanners.map((b) => ({
-        key: b.id,
-        eyebrow: b.eyebrow || "",
-        title: b.title,
-        subtitle: b.subtitle || "",
-        href: b.linkUrl || "/shop",
-        ctaLabel: b.ctaLabel || "Shop Now",
-        image: b.imageUrl!,
-        mobileImage: b.mobileImageUrl || b.imageUrl!,
-        overlayOpacity: b.overlayOpacity,
-        textAlign: b.textAlign,
-        openInNewTab: b.openInNewTab,
-      }))
-    : [];
-
-  const productSlides: ProductSlide[] = !isBannerMode
-    ? products
-        .filter((p) => p.imageUrl || p.images?.[0])
-        .map((p, i) => {
-          const discount = calcDiscount(p.price, p.originalPrice);
-          return {
-            key: p.id,
-            eyebrow: p.brand || "Featured",
-            title: p.name,
-            subtitle: deriveSubtitle(p.description),
-            specBadges: deriveSpecBadges(p.description),
-            discount: discount > 0 ? `${discount}% OFF` : "",
-            href: `/product/${p.id}`,
-            bg: SLIDE_BACKGROUNDS[i % SLIDE_BACKGROUNDS.length],
-            image: withTransparentBackground(p.imageUrl || p.images?.[0]),
-          };
-        })
-    : [];
-
-  const slideCount = isBannerMode ? bannerSlides.length : productSlides.length;
+  const slideCount = productSlides.length;
 
   // Wires our own styled arrow/dot elements into Swiper's Navigation and
   // Pagination modules instead of using Swiper's default markup — keeps the
@@ -271,77 +207,6 @@ export default function HeroBanner({ banners, products = [] }: HeroBannerProps) 
     },
     onSlideChange: (swiper: SwiperInstance) => setActiveIndex(swiper.realIndex),
   };
-
-  if (isBannerMode) {
-    return (
-      <section className={styles.bannerHero}>
-        <Swiper {...swiperCommonProps} className={styles.swiperRoot}>
-          {bannerSlides.map((slide, i) => (
-            <SwiperSlide key={slide.key} className={styles.bannerSlide}>
-              <div className={styles.bannerSlideImage}>
-                <Image
-                  src={isMobile ? slide.mobileImage : slide.image}
-                  alt={slide.title}
-                  fill
-                  sizes="100vw"
-                  priority={i === 0}
-                  className={styles.bannerImage}
-                />
-              </div>
-              <div className={styles.bannerOverlay} style={{ background: buildBannerOverlayGradient(slide.overlayOpacity) }} />
-              <div className={styles.bannerContentWrap} data-align={slide.textAlign}>
-                <div className={styles.bannerContent}>
-                  {slide.eyebrow && <span className={styles.eyebrow}>{slide.eyebrow}</span>}
-                  {i === activeIndex ? (
-                    <h1 className={styles.bannerTitle}>{slide.title}</h1>
-                  ) : (
-                    <p className={styles.bannerTitle}>{slide.title}</p>
-                  )}
-                  {slide.subtitle && <p className={styles.bannerSubtitle}>{slide.subtitle}</p>}
-                  <div className={styles.ctaRow}>
-                    <Link
-                      href={slide.href}
-                      className={styles.ctaPrimary}
-                      target={slide.openInNewTab ? "_blank" : undefined}
-                      rel={slide.openInNewTab ? "noopener noreferrer" : undefined}
-                    >
-                      {slide.ctaLabel}
-                    </Link>
-                    <Link href="/shop" className={styles.ctaSecondary}>
-                      View Products
-                    </Link>
-                  </div>
-                  <div className={styles.trustRow}>
-                    <span>
-                      <CheckIcon width="14" height="14" /> Genuine Products
-                    </span>
-                    <span>
-                      <TruckIcon width="14" height="14" /> Delivery in Juba
-                    </span>
-                    <span>
-                      <ShieldIcon width="14" height="14" /> Trusted Quality
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-
-        {slideCount > 1 && (
-          <>
-            <button ref={prevRef} className={`${styles.arrow} ${styles.arrowPrev}`} aria-label="Previous slide">
-              <ChevronLeftIcon />
-            </button>
-            <button ref={nextRef} className={`${styles.arrow} ${styles.arrowNext}`} aria-label="Next slide">
-              <ChevronRightIcon />
-            </button>
-            <div ref={paginationRef} className={styles.dots} />
-          </>
-        )}
-      </section>
-    );
-  }
 
   return (
     <section className={styles.hero}>
