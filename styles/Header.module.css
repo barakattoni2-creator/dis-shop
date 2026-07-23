@@ -344,37 +344,70 @@
   }
 }
 
+/* Mobile row layout: hamburger / logo / action icons share one compact row
+   (ordered independently of source order via `order`), and the search bar
+   — cramped to a sliver if left on that same row — gets its own full-width
+   row underneath instead. */
 @media (max-width: 768px) {
   .menuToggle {
     display: block;
+    order: 1;
   }
 
-  .mainBar {
-    grid-template-columns: auto auto 1fr;
-    row-gap: 0.7rem;
-  }
-
-  .logoBadge {
-    font-size: 1.65rem;
-    padding: 0.36rem 0.7rem;
-  }
-
-  .logoText {
-    font-size: 2.3rem;
+  .logo {
+    order: 2;
   }
 
   .actions {
+    order: 3;
+    justify-self: end;
+  }
+
+  .searchWrap {
+    order: 4;
     grid-column: 1 / -1;
-    justify-self: stretch;
-    justify-content: flex-end;
+  }
+
+  .mainBar {
+    grid-template-columns: auto 1fr auto;
+    column-gap: 0.6rem;
+    row-gap: 0.65rem;
+    padding: 0.85rem 1rem;
+  }
+
+  .logoBadge {
+    font-size: 1.5rem;
+    padding: 0.32rem 0.6rem;
+  }
+
+  .logoText {
+    font-size: 2.05rem;
   }
 
   .searchForm {
     max-width: none;
-    grid-column: 3;
   }
 
   .actionText {
     display: none;
+  }
+
+  .actionLink {
+    padding: 0.4rem 0.45rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .logoBadge {
+    font-size: 1.3rem;
+    padding: 0.28rem 0.5rem;
+  }
+
+  .logoText {
+    font-size: 1.75rem;
+  }
+
+  .actions {
+    gap: 0.15rem;
   }
 }

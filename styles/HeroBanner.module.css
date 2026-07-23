@@ -180,42 +180,95 @@
   }
 }
 
+/* Phone tier — 220-280px banner height (real device widths tested against:
+   iPhone SE/13/14/15, Samsung S23, all well under 600px). Content is
+   trimmed, not just shrunk: the trust row is dropped (least essential,
+   wouldn't fit in this little vertical room) and both title and subtitle
+   are hard line-clamped so a long admin-entered banner title can never
+   push the CTA row out of the fixed-height section or overflow it. */
 @media (max-width: 600px) {
   .bannerHero {
-    height: 460px;
+    height: 260px;
   }
 
   .bannerContentWrap {
-    padding: 0 1.25rem;
+    padding: 0 1.1rem;
+  }
+
+  .bannerContent {
+    max-width: 100%;
+  }
+
+  .eyebrow {
+    padding: 0.22rem 0.7rem;
+    font-size: 0.68rem;
+    margin-bottom: 0.5rem;
   }
 
   .bannerTitle {
-    font-size: 1.35rem;
+    font-size: 1.15rem;
+    line-height: 1.25;
+    margin-bottom: 0.4rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .bannerSubtitle {
-    font-size: 0.95rem;
-    margin-bottom: 1rem;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    margin-bottom: 0.65rem;
+    max-width: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .bannerHero .ctaRow {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.7rem;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
   }
 
   .bannerHero .ctaPrimary,
   .bannerHero .ctaSecondary {
-    text-align: center;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.78rem;
+    border-radius: 8px;
+    white-space: nowrap;
   }
 
-  .trustRow {
-    gap: 0.6rem 0.9rem;
-    margin-top: 1rem;
+  /* Decorative trust badges are the first thing to go at this height —
+     title, subtitle and the buttons are what actually need the room. */
+  .bannerHero .trustRow {
+    display: none;
   }
 
-  .trustRow span {
-    font-size: 0.7rem;
+  .bannerHero .arrow {
+    width: 28px;
+    height: 28px;
+  }
+
+  .bannerHero .arrowPrev {
+    left: 0.4rem;
+  }
+
+  .bannerHero .arrowNext {
+    right: 0.4rem;
+  }
+
+  .bannerHero .dots {
+    bottom: 0.6rem;
+  }
+
+  .bannerHero .dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .bannerHero .dotActive {
+    width: 16px;
   }
 }
 
