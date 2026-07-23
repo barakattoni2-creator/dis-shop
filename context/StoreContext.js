@@ -13,6 +13,7 @@ const EMPTY_STATE = {
   orders: [],
   currency: "USD",
   couponCode: null,
+  deliveryZone: null,
 };
 
 function readPersistedState() {
@@ -25,6 +26,7 @@ function readPersistedState() {
     orders: saved.orders || [],
     currency: saved.currency || "USD",
     couponCode: saved.couponCode || null,
+    deliveryZone: saved.deliveryZone || null,
   };
 }
 
@@ -65,7 +67,7 @@ function getServerSnapshot() {
 
 export function StoreProvider({ children }) {
   const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const { cart, wishlist, compareList, user, orders, currency, couponCode } = state;
+  const { cart, wishlist, compareList, user, orders, currency, couponCode, deliveryZone } = state;
 
   const setCart = (updater) =>
     setStoreState((prev) => ({
@@ -144,6 +146,9 @@ export function StoreProvider({ children }) {
   const setCurrency = (nextCurrency) =>
     setStoreState((prev) => ({ ...prev, currency: nextCurrency }));
 
+  const setDeliveryZone = (nextZone) =>
+    setStoreState((prev) => ({ ...prev, deliveryZone: nextZone }));
+
   const applyCoupon = (code) =>
     setStoreState((prev) => ({ ...prev, couponCode: code }));
   const removeCoupon = () =>
@@ -160,6 +165,8 @@ export function StoreProvider({ children }) {
     orders,
     currency,
     couponCode,
+    deliveryZone,
+    setDeliveryZone,
     addToCart,
     removeFromCart,
     updateQty,

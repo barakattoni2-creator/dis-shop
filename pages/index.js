@@ -18,6 +18,7 @@ import Newsletter from "@/components/Newsletter";
 import Reveal from "@/components/Reveal";
 import { fetchProducts, fetchBanners, fetchHomepageCategoryList, fetchBrands } from "@/lib/catalog";
 import { fetchSettings } from "@/services/db/settings";
+import { fetchTopReviews } from "@/services/db/reviews";
 import { HOMEPAGE_SECTIONS_SETTING_KEY, parseHomepageSectionState } from "@/data/homepageSections";
 import { calcDiscount } from "@/utils/format";
 import styles from "@/styles/Home.module.css";
@@ -40,15 +41,16 @@ export async function getStaticProps() {
   // transient P1001 here must not crash the homepage or fall back to a
   // stale/wrong layout. Empty arrays degrade gracefully — every section
   // below already has its own empty state — and the next revalidate retries.
-  const [products, banners, categories, brands, settings] = await Promise.all([
+  const [products, banners, categories, brands, settings, reviews] = await Promise.all([
     fetchProducts().catch(logAndFallback("fetchProducts", [])),
     fetchBanners().catch(logAndFallback("fetchBanners", [])),
     fetchHomepageCategoryList().catch(logAndFallback("fetchHomepageCategoryList", [])),
     fetchBrands().catch(logAndFallback("fetchBrands", [])),
     fetchSettings().catch(logAndFallback("fetchSettings", {})),
+    fetchTopReviews().catch(logAndFallback("fetchTopReviews", [])),
   ]);
   const sectionState = parseHomepageSectionState(settings[HOMEPAGE_SECTIONS_SETTING_KEY]);
-  return { props: { products, banners, categories, brands, sectionState }, revalidate: 60 };
+  return { props: { products, banners, categories, brands, sectionState, reviews }, revalidate: 60 };
 }
 
 // A "valid deal" requires real price data proving an actual discount, and
@@ -67,7 +69,7 @@ function isValidDeal(p) {
 // reasonable number" requirement.
 const SECTION_LIMIT = 10;
 
-export default function Home({ products, banners, categories, brands, sectionState }) {
+export default function Home({ products, banners, categories, brands, sectionState, reviews }) {
   const bestSellers = products.filter((p) => p.badge === "Best Seller").slice(0, SECTION_LIMIT);
   const flashDeals = products
     .filter((p) => p.badge === "Deal" && isValidDeal(p))
@@ -262,7 +264,7 @@ export default function Home({ products, banners, categories, brands, sectionSta
       alt: true,
       node: (
         <Reveal>
-          <CustomerReviews />
+          <CustomerReviews reviews={reviews} />
         </Reveal>
       ),
     },

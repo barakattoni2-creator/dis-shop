@@ -134,6 +134,10 @@
    as they were. The clamp floor (2.4rem) matches the old fixed desktop
    size exactly, so nothing shrinks; it only grows further on wide
    screens, plus tighter tracking for a more premium feel. */
+/* Line-clamped at every tier (not just the mobile breakpoint below) — an
+   admin can type an arbitrarily long title/subtitle, and this guarantees
+   it never grows past 3 headline lines / 2 description lines regardless
+   of viewport, instead of only being bounded on phones. */
 .bannerTitle {
   font-size: clamp(2.4rem, 2rem + 1.4vw, 3.4rem);
   font-weight: 800;
@@ -142,6 +146,10 @@
   margin-bottom: 1.2rem;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.4);
   letter-spacing: -0.03em;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .bannerSubtitle {
@@ -152,6 +160,10 @@
   color: rgba(255, 255, 255, 0.92);
   max-width: 420px;
   letter-spacing: 0.1px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .trustRow {
@@ -230,7 +242,7 @@
     margin-bottom: 0.9rem;
     max-width: 100%;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -399,6 +411,10 @@
   margin-bottom: 0.9rem;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
   letter-spacing: -0.03em;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Real per-product spec highlights, parsed from the product's own
@@ -435,6 +451,10 @@
   letter-spacing: 0.1px;
   margin-bottom: 1.5rem;
   opacity: 0.95;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .discountBadge {

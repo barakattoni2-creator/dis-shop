@@ -160,7 +160,7 @@ export default function HomepageBannerSlider({ banners }: HomepageBannerSliderPr
                     {slide.ctaLabel}
                   </Link>
                   <Link href="/shop" className={styles.ctaSecondary}>
-                    View Products
+                    Explore Category
                   </Link>
                 </div>
                 <div className={styles.trustRow}>

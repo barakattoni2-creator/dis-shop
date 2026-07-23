@@ -67,10 +67,26 @@
 }
 
 .name {
-  display: block;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
   font-weight: 700;
   font-size: 0.9rem;
   color: var(--dis-navy);
+}
+
+.verifiedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 20px;
+  background: rgba(26, 138, 61, 0.1);
+  color: #1a8a3d;
+  font-size: 0.66rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .location {

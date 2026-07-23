@@ -22,6 +22,30 @@ export async function fetchReviewsForProduct(productId: string): Promise<PlainRe
   return rows.map(toPlain);
 }
 
+export interface TopReview extends PlainReview {
+  productName: string;
+}
+
+// Site-wide testimonials for the homepage — real reviews only, requiring
+// both a written comment (a bare star rating reads as filler on a
+// homepage card) and a 4+ rating (a homepage showcase isn't the place for
+// a legitimate but critical 2-star review). Falls back to an empty array
+// once the store has too few of these yet; the homepage keeps its
+// existing static placeholder copy in that case rather than showing a
+// half-empty grid.
+export async function fetchTopReviews(limit = 6): Promise<TopReview[]> {
+  if (!isDbConfigured()) return [];
+  const rows = await prisma!.review.findMany({
+    where: { rating: { gte: 4 }, comment: { not: null } },
+    orderBy: [{ verified: "desc" }, { createdAt: "desc" }],
+    take: limit,
+    include: { product: { select: { name: true } } },
+  });
+  return rows
+    .filter((row) => row.comment && row.comment.trim().length > 0)
+    .map((row) => ({ ...toPlain(row), productName: row.product.name }));
+}
+
 // Keeps Product.rating/Product.reviews (shown across the whole storefront —
 // cards, hero, etc.) in sync with the real review rows, rather than leaving
 // them as the static numbers an admin typed in.

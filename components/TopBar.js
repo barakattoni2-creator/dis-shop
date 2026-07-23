@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useCompanyInfo } from "@/components/CompanyInfoProvider";
 import CurrencySwitcher from "@/components/CurrencySwitcher";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import DeliveryLocationSwitcher from "@/components/DeliveryLocationSwitcher";
 import styles from "@/styles/TopBar.module.css";
 
 const MESSAGES = [
@@ -39,6 +40,7 @@ export default function TopBar() {
           <Link href="/contact" className={styles.item}>
             Help &amp; Support
           </Link>
+          <DeliveryLocationSwitcher />
           <LanguageSwitcher />
           <CurrencySwitcher />
         </div>
