@@ -31,6 +31,28 @@
   padding: 1.3rem 1.5rem;
   max-width: 1400px;
   margin: 0 auto;
+  transition: padding 0.25s ease;
+}
+
+/* Shrink-on-scroll: the bar itself compresses (padding + logo scale down)
+   once the page has scrolled past the top, rather than only gaining a
+   shadow/background as before. `scrolled` is toggled from Header.js's
+   existing rAF-throttled scroll listener — no new listener needed. */
+.stickyWrapScrolled .mainBar {
+  padding: 0.7rem 1.5rem;
+}
+
+.stickyWrapScrolled .navBar {
+  padding: 0.5rem 1.5rem;
+}
+
+.stickyWrapScrolled .logoBadge {
+  font-size: 1.7rem;
+  padding: 0.38rem 0.7rem;
+}
+
+.stickyWrapScrolled .logoText {
+  font-size: 2.35rem;
 }
 
 .menuToggle {
@@ -105,6 +127,9 @@
   transform: translateX(-50%);
   width: 100%;
   max-width: 780px;
+  max-height: 70vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 14px;
@@ -113,10 +138,30 @@
   z-index: 60;
   display: flex;
   flex-direction: column;
+  gap: 0.9rem;
+}
+
+.searchDropdownSection {
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
 }
 
+.searchDropdownSection + .searchDropdownSection {
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--border);
+}
+
+.searchDropdownSectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .searchDropdownLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.3px;
@@ -131,13 +176,17 @@
 }
 
 .searchDropdownChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   border-radius: 20px;
-  padding: 0.35rem 0.85rem;
+  padding: 0.35rem 0.6rem 0.35rem 0.85rem;
   font-size: 0.83rem;
   font-weight: 600;
   background: var(--surface);
   border: 1px solid var(--border);
   color: var(--dis-navy);
+  transition: border-color 0.15s ease, color 0.15s ease;
 }
 
 .searchDropdownChip:hover {
@@ -145,18 +194,148 @@
   color: var(--dis-blue);
 }
 
+.chipRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  color: #9aa5b3;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.chipRemove:hover {
+  background: var(--border);
+  color: var(--dis-navy);
+}
+
+/* Product suggestion rows — reused for both "Trending Now" and live
+   autocomplete results, image + name + price. */
+.searchSuggestList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.searchSuggestRow {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.45rem 0.4rem;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.searchSuggestRow:hover {
+  background: var(--surface);
+}
+
+.searchSuggestThumb {
+  position: relative;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.searchSuggestImg {
+  object-fit: contain;
+}
+
+.searchSuggestName {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--dis-navy);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.searchSuggestPrice {
+  flex-shrink: 0;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--dis-price);
+}
+
+.searchSeeAll {
+  align-self: center;
+  margin-top: 0.2rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--dis-blue);
+}
+
+.searchSeeAll:hover {
+  color: var(--dis-orange-dark);
+}
+
+.searchNoResults {
+  padding: 0.5rem 0.2rem;
+  font-size: 0.85rem;
+  color: #7a8699;
+  text-align: center;
+}
+
 .searchInput {
   flex: 1;
+  min-width: 0;
   border: none;
   padding: 1.05rem 1.5rem;
   font-size: 1.05rem;
   outline: none;
 }
 
+.voiceBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  background: #fff;
+  color: #7a8699;
+  border: none;
+  border-left: 1px solid var(--border);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.voiceBtn:hover {
+  color: var(--dis-blue);
+  background: var(--surface);
+}
+
+.voiceBtnActive {
+  color: #fff;
+  background: var(--dis-orange);
+  animation: voicePulse 1.2s ease-in-out infinite;
+}
+
+@keyframes voicePulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 106, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(255, 106, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voiceBtnActive {
+    animation: none;
+  }
+}
+
 .searchButton {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   background: var(--dis-orange);
   color: #fff;
   border: none;
@@ -187,6 +366,10 @@
   line-height: 1.15;
   white-space: nowrap;
   transition: border-color 0.15s ease, background 0.15s ease;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .actionLink:hover {
@@ -220,6 +403,280 @@
   align-items: center;
   justify-content: center;
   padding: 0 3px;
+}
+
+/* Shared dropdown shell — User menu, Mini cart, Notifications all use the
+   same trigger (.actionLink) + panel pattern. */
+.dropdownRoot {
+  position: relative;
+}
+
+.actionChevron {
+  margin-left: 0.2rem;
+  vertical-align: -1px;
+  opacity: 0.8;
+}
+
+.dropdownPanel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 260px;
+  background: #fff;
+  color: var(--dis-navy);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 16px 36px rgba(8, 26, 58, 0.18);
+  padding: 0.6rem;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  animation: dropdownIn 0.18s ease;
+}
+
+.dropdownPanelWide {
+  width: 320px;
+}
+
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropdownPanel {
+    animation: none;
+  }
+}
+
+.dropdownHeader {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0.6rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.3rem;
+}
+
+.dropdownHeaderName {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--dis-navy);
+}
+
+.dropdownHeaderSub {
+  font-size: 0.76rem;
+  color: #7a8699;
+  margin-top: 0.15rem;
+}
+
+.dropdownItem,
+.dropdownItemBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--dis-navy);
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dropdownItem:hover,
+.dropdownItemBtn:hover {
+  background: var(--surface);
+  color: var(--dis-blue);
+}
+
+.dropdownItemBtn {
+  color: var(--dis-price);
+  border-top: 1px solid var(--border);
+  margin-top: 0.2rem;
+  padding-top: 0.7rem;
+}
+
+.dropdownItemBtn:hover {
+  color: var(--dis-price);
+  background: rgba(204, 51, 0, 0.08);
+}
+
+/* Mini cart */
+.miniCartEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+  color: #7a8699;
+  text-align: center;
+}
+
+.miniCartEmpty p {
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.miniCartList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.miniCartRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem;
+  border-radius: 8px;
+}
+
+.miniCartRow:hover {
+  background: var(--surface);
+}
+
+.miniCartInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.miniCartQty {
+  font-size: 0.72rem;
+  color: #7a8699;
+}
+
+.miniCartRemove {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  color: #9aa5b3;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.miniCartRemove:hover {
+  background: rgba(204, 51, 0, 0.1);
+  color: var(--dis-price);
+}
+
+.miniCartMore {
+  font-size: 0.76rem;
+  color: #7a8699;
+  text-align: center;
+  padding: 0.3rem 0;
+  margin: 0;
+}
+
+.miniCartFooter {
+  border-top: 1px solid var(--border);
+  margin-top: 0.4rem;
+  padding-top: 0.6rem;
+}
+
+.miniCartSubtotal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--dis-navy);
+  padding: 0 0.4rem 0.6rem;
+}
+
+.miniCartSubtotalAmount {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--dis-price);
+}
+
+.miniCartActions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 0.4rem;
+}
+
+.miniCartViewBtn,
+.miniCartCheckoutBtn {
+  flex: 1;
+  text-align: center;
+  padding: 0.55rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.miniCartViewBtn {
+  background: var(--surface);
+  color: var(--dis-navy);
+  border: 1px solid var(--border);
+}
+
+.miniCartViewBtn:hover {
+  border-color: var(--dis-blue);
+  color: var(--dis-blue);
+}
+
+.miniCartCheckoutBtn {
+  background: var(--dis-orange);
+  color: #fff;
+}
+
+.miniCartCheckoutBtn:hover {
+  background: var(--dis-orange-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(255, 106, 0, 0.35);
+}
+
+/* Notifications */
+.notificationEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+  color: #7a8699;
+  text-align: center;
+}
+
+.notificationEmpty p {
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .dropdownPanel {
+    right: -3rem;
+    width: 92vw;
+    max-width: 320px;
+  }
+
+  .dropdownPanelWide {
+    width: 92vw;
+    max-width: 340px;
+  }
 }
 
 .navBar {
@@ -336,6 +793,43 @@
   padding: 0.75rem 0.4rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   font-weight: 600;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Staggered fade+slide entrance for each drawer row, keyed by the
+   `--drawer-i` custom property Header.js sets per item — reads as a single
+   cascading reveal rather than the whole list appearing at once. Only runs
+   while the drawer is actually open so closed/offscreen state stays static. */
+.drawerLink,
+.drawerAnimItem {
+  animation: none;
+}
+
+.drawerOpen .drawerLink,
+.drawerOpen .drawerAnimItem {
+  animation: drawerItemIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--drawer-i, 0) * 0.045s);
+}
+
+@keyframes drawerItemIn {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawerOpen .drawerLink,
+  .drawerOpen .drawerAnimItem {
+    animation: none;
+  }
 }
 
 @media (max-width: 900px) {
@@ -433,4 +927,58 @@
   .searchButton {
     padding: 0 0.9rem;
   }
+}
+
+/* iOS Safari / Android Chrome touch polish: no grey tap-flash on any
+   header control, and every interactive target sized/reachable for a
+   thumb rather than a cursor. */
+.menuToggle,
+.logo,
+.drawerClose,
+.actionLink,
+.navLink,
+.specialBtn,
+.searchButton,
+.voiceBtn,
+.searchDropdownChip,
+.chipRemove,
+.searchSuggestRow,
+.dropdownItem,
+.dropdownItemBtn,
+.miniCartRemove,
+.miniCartViewBtn,
+.miniCartCheckoutBtn,
+.drawerLink {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.menuToggle,
+.drawerClose {
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chipRemove {
+  width: 20px;
+  height: 20px;
+}
+
+/* Notched/rounded-corner phones (iPhone in landscape, etc.) — keep the
+   drawer's content and close button clear of the safe area rather than
+   letting it sit under the notch or home-indicator gesture bar. */
+.drawer {
+  padding-left: max(1.1rem, env(safe-area-inset-left));
+  padding-bottom: max(1.1rem, env(safe-area-inset-bottom));
+}
+
+/* Prevent the sticky header's blur/opacity transitions and dropdown
+   entrance animations from causing scroll jank on lower-powered Android
+   Chrome devices — promotes to its own compositor layer only while
+   scrolling state can change. */
+.stickyWrap {
+  will-change: background;
 }

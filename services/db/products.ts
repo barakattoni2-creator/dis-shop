@@ -64,6 +64,67 @@ function toPlain(row: ProductWithRelations): PlainProduct {
   };
 }
 
+export interface ProductSuggestion {
+  id: string;
+  name: string;
+  imageUrl: string | null;
+  price: number;
+}
+
+function toSuggestion(row: {
+  id: string;
+  name: string;
+  imageUrl: string | null;
+  price: number;
+}): ProductSuggestion {
+  return { id: row.id, name: row.name, imageUrl: row.imageUrl, price: row.price };
+}
+
+// Lightweight, select-only queries for the header search-suggest endpoint —
+// deliberately not routed through the full `include`/`toPlain` pipeline
+// above (category/brand relations, specs, SEO fields, etc.) since an
+// autocomplete dropdown only ever needs id/name/image/price and this runs
+// on every keystroke.
+export async function searchProductSuggestions(query: string, limit = 6): Promise<ProductSuggestion[]> {
+  const term = query.trim();
+  if (!isDbConfigured() || !term) return [];
+  const rows = await prisma!.product.findMany({
+    where: { status: "PUBLISHED", name: { contains: term, mode: "insensitive" } },
+    select: { id: true, name: true, imageUrl: true, price: true },
+    orderBy: { bestSeller: "desc" },
+    take: limit,
+  });
+  return rows.map(toSuggestion);
+}
+
+// "Trending" is real bestSeller-flagged inventory (admin-managed, same flag
+// pages/index.js's own Best Sellers section reads) rather than any
+// fabricated popularity score.
+export async function fetchTrendingProducts(limit = 6): Promise<ProductSuggestion[]> {
+  if (!isDbConfigured()) return [];
+  const rows = await prisma!.product.findMany({
+    where: { status: "PUBLISHED", bestSeller: true },
+    select: { id: true, name: true, imageUrl: true, price: true },
+    orderBy: { updatedAt: "desc" },
+    take: limit,
+  });
+  return rows.map(toSuggestion);
+}
+
+// Looks up the lightweight suggestion shape for a set of ids in one round
+// trip, then re-sorts to match the caller's order — used to resolve
+// localStorage-tracked "recently viewed" ids (lib/recentlyViewed.ts) back
+// into displayable product cards for the header dropdown.
+export async function fetchProductSuggestionsByIds(ids: string[]): Promise<ProductSuggestion[]> {
+  if (!isDbConfigured() || ids.length === 0) return [];
+  const rows = await prisma!.product.findMany({
+    where: { status: "PUBLISHED", id: { in: ids } },
+    select: { id: true, name: true, imageUrl: true, price: true },
+  });
+  const byId = new Map(rows.map((row) => [row.id, toSuggestion(row)]));
+  return ids.map((id) => byId.get(id)).filter((v): v is ProductSuggestion => Boolean(v));
+}
+
 // Storefront-facing — PUBLISHED only. DRAFT/ARCHIVED products exist in the
 // admin but are never shown to customers.
 export async function fetchProducts(): Promise<PlainProduct[]> {

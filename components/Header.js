@@ -1,11 +1,14 @@
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useStore } from "@/context/StoreContext";
 import MegaMenu from "@/features/navigation/MegaMenu";
 import MobileCategoryMenu from "@/features/navigation/MobileCategoryMenu";
+import SearchBar from "@/features/navigation/SearchBar";
+import UserMenu from "@/features/navigation/UserMenu";
+import MiniCart from "@/features/navigation/MiniCart";
+import NotificationBell from "@/features/navigation/NotificationBell";
 import TopBar from "@/components/TopBar";
-import { SearchIcon, CartIcon, HeartIcon, UserIcon, CompareIcon } from "@/components/icons";
+import { HeartIcon, CompareIcon } from "@/components/icons";
 import styles from "@/styles/Header.module.css";
 
 // "Shop" opens the mega menu (built from the live category tree); Household
@@ -22,12 +25,8 @@ const NAV_LINKS = [
 ];
 
 export default function Header() {
-  const { cartCount, wishlist, user, compareList } = useStore();
-  const router = useRouter();
-  const [query, setQuery] = useState("");
+  const { wishlist, compareList } = useStore();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [popularTerms, setPopularTerms] = useState([]);
-  const [searchFocused, setSearchFocused] = useState(false);
   const [categoryTree, setCategoryTree] = useState([]);
   const [categoryTreeLoading, setCategoryTreeLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
@@ -50,13 +49,6 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/search-config")
-      .then((r) => r.json())
-      .then((data) => setPopularTerms(data.popularSearches || []))
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
     fetch("/api/categories")
       .then((r) => r.json())
       .then((data) => setCategoryTree(data.tree || []))
@@ -64,20 +56,17 @@ export default function Header() {
       .finally(() => setCategoryTreeLoading(false));
   }, []);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    router.push(query ? `/search?q=${encodeURIComponent(query)}` : "/search");
-    setMenuOpen(false);
-  };
-
-  const handlePopularTermClick = (term) => {
-    router.push(`/search?q=${encodeURIComponent(term)}`);
-    setQuery(term);
-    setSearchFocused(false);
-    setMenuOpen(false);
-  };
-
-  const showSuggestions = searchFocused && !query.trim() && popularTerms.length > 0;
+  // Body scroll is locked while the mobile drawer is open so the page
+  // behind it can't scroll on iOS Safari (which otherwise rubber-bands the
+  // underlying content even with the backdrop in place).
+  useEffect(() => {
+    if (!menuOpen) return;
+    const { overflow } = document.body.style;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = overflow;
+    };
+  }, [menuOpen]);
 
   return (
     <header className={styles.header}>
@@ -99,50 +88,10 @@ export default function Header() {
             <span className={styles.logoText}>Shop</span>
           </Link>
 
-          <div className={styles.searchWrap}>
-            <form className={styles.searchForm} onSubmit={handleSearch}>
-              <input
-                type="text"
-                className={styles.searchInput}
-                placeholder="Search products, brands and more"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => setSearchFocused(false)}
-                aria-label="Search"
-              />
-              <button type="submit" className={styles.searchButton} aria-label="Search">
-                <SearchIcon />
-              </button>
-            </form>
-            {showSuggestions && (
-              <div className={styles.searchDropdown}>
-                <span className={styles.searchDropdownLabel}>Popular Searches</span>
-                <div className={styles.searchDropdownChips}>
-                  {popularTerms.map((term) => (
-                    <button
-                      key={term}
-                      type="button"
-                      className={styles.searchDropdownChip}
-                      onMouseDown={() => handlePopularTermClick(term)}
-                    >
-                      {term}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          <SearchBar />
 
           <nav className={styles.actions}>
-            <Link href={user ? "/dashboard" : "/login"} className={styles.actionLink}>
-              <span className={styles.actionIcon}>
-                <UserIcon />
-              </span>
-              <span className={styles.actionText}>
-                {user ? `Hi, ${user.name}` : "Sign In"}
-              </span>
-            </Link>
+            <UserMenu />
             {compareList.length > 0 && (
               <Link href="/compare" className={styles.actionLink}>
                 <span className={styles.actionIcon}>
@@ -161,13 +110,8 @@ export default function Header() {
               </span>
               <span className={styles.actionText}>Wishlist</span>
             </Link>
-            <Link href="/cart" className={styles.actionLink}>
-              <span className={styles.actionIcon}>
-                <CartIcon />
-                {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
-              </span>
-              <span className={styles.actionText}>Cart</span>
-            </Link>
+            <NotificationBell />
+            <MiniCart />
           </nav>
         </div>
 
@@ -208,22 +152,30 @@ export default function Header() {
           </button>
         </div>
         <div className={styles.drawerLinks}>
-          <Link href={HOME_LINK.href} className={styles.drawerLink} onClick={() => setMenuOpen(false)}>
+          <Link
+            href={HOME_LINK.href}
+            className={styles.drawerLink}
+            style={{ "--drawer-i": 0 }}
+            onClick={() => setMenuOpen(false)}
+          >
             {HOME_LINK.label}
           </Link>
-          <Link href="/shop" className={styles.drawerLink} onClick={() => setMenuOpen(false)}>
+          <Link href="/shop" className={styles.drawerLink} style={{ "--drawer-i": 1 }} onClick={() => setMenuOpen(false)}>
             Shop
           </Link>
-          <MobileCategoryMenu
-            tree={categoryTree}
-            loading={categoryTreeLoading}
-            onNavigate={() => setMenuOpen(false)}
-          />
-          {NAV_LINKS.map((link) => (
+          <div className={styles.drawerAnimItem} style={{ "--drawer-i": 2 }}>
+            <MobileCategoryMenu
+              tree={categoryTree}
+              loading={categoryTreeLoading}
+              onNavigate={() => setMenuOpen(false)}
+            />
+          </div>
+          {NAV_LINKS.map((link, i) => (
             <Link
               key={link.label}
               href={link.href}
               className={styles.drawerLink}
+              style={{ "--drawer-i": i + 3 }}
               onClick={() => setMenuOpen(false)}
             >
               {link.label}
