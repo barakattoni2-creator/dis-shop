@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useCompanyInfo } from "@/components/CompanyInfoProvider";
+import { ChevronUpIcon } from "@/components/icons";
 import styles from "@/styles/Footer.module.css";
 
 function FacebookIcon(props) {
@@ -50,8 +51,17 @@ export default function Footer() {
     { label: "WhatsApp", Icon: WhatsAppIcon, href: `https://wa.me/${whatsappNumber}` },
   ];
 
+  const scrollToTop = () => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  };
+
   return (
     <footer className={styles.footer}>
+      <button type="button" className={styles.backToTop} onClick={scrollToTop}>
+        <ChevronUpIcon width="16" height="16" /> Back to Top
+      </button>
+
       <div className={styles.columns}>
         <div className={styles.column}>
           <Link href="/" className={styles.logo}>

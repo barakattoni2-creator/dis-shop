@@ -7,6 +7,7 @@ import "leaflet/dist/leaflet.css";
 import { StoreProvider } from "@/context/StoreContext";
 import { CompanyInfoProvider } from "@/components/CompanyInfoProvider";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import RouteProgress from "@/components/RouteProgress";
 
 export default function App({ Component, pageProps }) {
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function App({ Component, pageProps }) {
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="dis-admin-theme">
       <CompanyInfoProvider>
         <StoreProvider>
+          <RouteProgress />
           <Component {...pageProps} />
           <WhatsAppButton />
           <Toaster richColors position="top-right" />
