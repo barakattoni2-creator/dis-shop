@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { SITE_URL, SITE_NAME } from "@/data/site";
 import styles from "@/styles/Home.module.css";
 
-export default function Layout({ title, description, image, children }) {
+export default function Layout({ title, description, image, noindex = false, children }) {
   const router = useRouter();
   const canonicalUrl = `${SITE_URL}${router.asPath.split("?")[0]}`;
   const pageTitle = title ? `${title} — ${SITE_NAME}` : SITE_NAME;
@@ -29,6 +29,7 @@ export default function Layout({ title, description, image, children }) {
       <Head>
         <title>{pageTitle}</title>
         {description && <meta name="description" content={description} />}
+        {noindex && <meta name="robots" content="noindex, nofollow" />}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="canonical" href={canonicalUrl} />

@@ -14,3 +14,19 @@
 .sectionAlt {
   background: var(--surface);
 }
+
+/* Marks a preview build as a preview at a glance — sits above the hero,
+   inside the normal document flow (not fixed/floating) so it shows up
+   plainly in screenshots and never overlaps the sticky header. */
+.previewBanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(90deg, var(--dis-orange), var(--dis-orange-dark));
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+}

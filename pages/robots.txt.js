@@ -6,6 +6,7 @@ export async function getServerSideProps({ res }) {
     "Allow: /",
     "Disallow: /admin",
     "Disallow: /api",
+    "Disallow: /preview",
     "",
     `Sitemap: ${SITE_URL}/sitemap.xml`,
   ].join("\n");
